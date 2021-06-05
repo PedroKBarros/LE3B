@@ -1,4 +1,6 @@
 from tkinter import *
+from tkinter.filedialog import askopenfilename
+
 from PIL import Image, ImageTk
 import UI.ui_constants as ui_consts
 
@@ -33,7 +35,8 @@ class Application:
         self.entry1 = Entry(self.fileContainer1)
         self.entry1["width"] = 30
         self.entry1["font"] = self.entryFont
-        self.entry1["state"] = "disable" #Desativa o widget, impedindo que se digite diretamente nele
+        self.entry1["state"] = "readonly" #O estado pode ser disable, normal ou readonly. 
+                                          #Para escrita por código ou pelo usuário, é necessário ser "normal"
         self.entry1.pack()
 
         self.load_image1 = Image.open(ui_consts.IMAGE_PATH_BTN_OPEN_LEAVE)
@@ -46,6 +49,7 @@ class Application:
         self.button2["highlightthickness"] = 0 #Para definir a espessura de destaque, retirando de fato a borda
         self.button2.bind("<Enter>", lambda event, button=self.button2, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_ENTER: self.handleEventMouseEnter(event, button, imgName))
         self.button2.bind("<Leave>", lambda event, button=self.button2, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_LEAVE: self.handleEventMouseLeave(event, button, imgName))
+        self.button2.bind("<Button-1>", self.handleEventMouseLeftClick)
         self.button2.pack()
         
 
@@ -63,8 +67,18 @@ class Application:
         render_image2 = ImageTk.PhotoImage(load_image2)
         button.configure(image=render_image2)
         button.image = render_image2
-        print("MOUSE LEAVE!")        
-    
+        print("MOUSE LEAVE!")   
+
+    def handleEventMouseLeftClick(self, event):
+        filename = askopenfilename(filetypes=(('text files', 'txt'),))
+        self.printEntry(self.entry1, filename)        
+
+    def printEntry(self, wgEntry, string):
+        originalState = wgEntry["state"]
+        wgEntry["state"] = "normal"
+        wgEntry.delete(0, END)
+        wgEntry.insert(0, string)
+        wgEntry["state"] = originalState
 
 def executaUI():
     root = Tk()
