@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename
-
 from PIL import Image, ImageTk
 import UI.ui_constants as ui_consts
 
@@ -58,8 +57,8 @@ def buildUI(root):
     button1.image = render_image1
     button1["bd"] = 0 #Para definir a borda, tornando-a mínima
     button1["highlightthickness"] = 0 #Para definir a espessura de destaque, retirando de fato a borda
-    button1.bind("<Enter>", lambda event, button=button1, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_ENTER, size=(50, 50): handleEventMouseEnter(event, button, imgName, size))
-    button1.bind("<Leave>", lambda event, button=button1, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_LEAVE, size=(50, 50): handleEventMouseLeave(event, button, imgName, size))
+    button1.bind("<Enter>", lambda event, wgControl=button1, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_ENTER, size=(50, 50), borderSize=0: handleEventMouseEnter(event, wgControl, imgName, size, borderSize))
+    button1.bind("<Leave>", lambda event, wgControl=button1, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_LEAVE, size=(50, 50), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
     button1.bind("<Button-1>", lambda event, widget=entry1: handleEventMouseLeftClick(event, widget))
     button1.place(x=133, y=50)
 
@@ -79,20 +78,20 @@ def buildUI(root):
     button2.image = render_image3
     button2["bd"] = 0 #Para definir a borda, tornando-a mínima
     button2["highlightthickness"] = 0 #Para definir a espessura de destaque, retirando de fato a borda
-    button2.bind("<Enter>", lambda event, button=button2, imgName=ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, size=(20, 20): handleEventMouseEnter(event, button, imgName, size))
-    button2.bind("<Leave>", lambda event, button=button2, imgName=ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE, size=(20, 20): handleEventMouseLeave(event, button, imgName, size))
+    button2.bind("<Enter>", lambda event, wgControl=button2, imgName=ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, size=(20, 20), borderSize=0: handleEventMouseEnter(event, wgControl, imgName, size, borderSize))
+    button2.bind("<Leave>", lambda event, wgControl=button2, imgName=ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE, size=(20, 20), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
     button2.place(x=6, y=117)
 
     load_image4 = Image.open(ui_consts.IMAGE_PATH_TIME_BAR)
-    load_image4 = load_image4.resize((100, 6), Image.ANTIALIAS) #Alterando as dimensões da imagem
+    load_image4 = load_image4.resize((80, 6), Image.ANTIALIAS) #Alterando as dimensões da imagem
     render_image4 = ImageTk.PhotoImage(load_image4)
 
     label3 = Label(root, image=render_image4)
     label3.image = render_image4
     label3["bd"] = 0
     label3["highlightthickness"] = 0
-    label3.bind("<Enter>", lambda event, button=label3, imgName=ui_consts.IMAGE_PATH_TIME_BAR, size=(100, 8): handleEventMouseEnter(event, button, imgName, size))
-    label3.bind("<Leave>", lambda event, button=label3, imgName=ui_consts.IMAGE_PATH_TIME_BAR, size=(100, 6): handleEventMouseLeave(event, button, imgName, size))
+    label3.bind("<Enter>", lambda event, wgControl=label3, imgName=ui_consts.IMAGE_PATH_TIME_BAR, size=(80, 8), borderSize=0: handleEventMouseEnter(event, wgControl, imgName, size, borderSize))
+    label3.bind("<Leave>", lambda event, wgControl=label3, imgName=ui_consts.IMAGE_PATH_TIME_BAR, size=(80, 6), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
     label3.place(x=30, y=124)
 
     label4 = Label(root)
@@ -100,7 +99,7 @@ def buildUI(root):
     label4["text"] = ui_consts.LABEL4_INITIAL_TEXT
     label4["fg"] = ui_consts.SECOND_FG_COLOR
     label4["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
-    label4.place(x=195, y=118)
+    label4.place(x=173, y=118)
 
     entry2 = Entry(root)
     entry2["width"] = 8
@@ -108,28 +107,48 @@ def buildUI(root):
     entry2["fg"] = ui_consts.SECOND_FG_COLOR
     entry2["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
     entry2["state"] = "normal"
-    entry2.place(x=135, y=119)
-
+    entry2.bind("<Enter>", lambda event, wgControl=entry2, imgName="", size=(0, 0), borderSize=0.5, borderColor=ui_consts.SECOND_BC_HIGHLIGHT_COLOR: handleEventMouseEnter(event, wgControl, imgName, size, borderSize, borderColor))
+    entry2.bind("<Leave>", lambda event, wgControl=entry2, imgName="", size=(0, 0), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
+    entry2.place(x=115, y=119)
     printEntry(entry2, "00:00:00", CENTER)
+
+    defaultOptionMenuValue = StringVar()
+    defaultOptionMenuValue.set(ui_consts.DEFAULT_OPTION_MENU1_VALUE)
+    optionMenu1 = OptionMenu(root, defaultOptionMenuValue, *ui_consts.OPTION_MENU1_VALUES)
+    optionMenu1["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE1)
+    optionMenu1["bg"] = ui_consts.CONTROLS_BG_COLOR
+    optionMenu1["fg"] = ui_consts.SECOND_FG_COLOR
+    optionMenu1["direction"] = "above"
+    optionMenu1["highlightthickness"] = 0
+    optionMenu1["relief"] = GROOVE
+    optionMenu1["width"] = 1
+    optionMenu1["height"] = 1
+    optionMenu1.place(x=242, y=113)
 
     #self.list_box1 = Listbox(self.commentContainer3, selectmode=SINGLE)
     #self.list_box1.pack()
     
 
-def handleEventMouseEnter(event, button, imgName, size):
-    load_image2 = Image.open(imgName)
-    load_image2 = load_image2.resize(size, Image.ANTIALIAS) #Alterando as dimensões da imagem
-    render_image2 = ImageTk.PhotoImage(load_image2)
-    button.configure(image=render_image2)
-    button.image = render_image2
+def handleEventMouseEnter(event, wgControl, imgName, size, borderSize, borderColor = "black"):
+    if (imgName != ""):
+        load_image2 = Image.open(imgName)
+        load_image2 = load_image2.resize(size, Image.ANTIALIAS) #Alterando as dimensões da imagem
+        render_image2 = ImageTk.PhotoImage(load_image2)
+        wgControl.configure(image=render_image2)
+        wgControl.image = render_image2
+    wgControl["highlightthickness"] = borderSize
+    wgControl["highlightbackground"] = borderColor
     print("MOUSE ENTER!")
 
-def handleEventMouseLeave(event, button, imgName, size):
-    load_image2 = Image.open(imgName)
-    load_image2 = load_image2.resize(size, Image.ANTIALIAS) #Alterando as dimensões da imagem
-    render_image2 = ImageTk.PhotoImage(load_image2)
-    button.configure(image=render_image2)
-    button.image = render_image2
+def handleEventMouseLeave(event, wgControl, imgName, size, borderSize, borderColor = "black"):
+    if (imgName != ""):
+        load_image2 = Image.open(imgName)
+        load_image2 = load_image2.resize(size, Image.ANTIALIAS) #Alterando as dimensões da imagem
+        render_image2 = ImageTk.PhotoImage(load_image2)
+        wgControl.configure(image=render_image2)
+        wgControl.image = render_image2
+    wgControl["highlightthickness"] = borderSize
+    wgControl["highlightbackground"] = borderColor
     print("MOUSE LEAVE!")   
 
 def handleEventMouseLeftClick(event, widget):
