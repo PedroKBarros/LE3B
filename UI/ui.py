@@ -81,19 +81,36 @@ def buildUI(root):
     button2["highlightthickness"] = 0 #Para definir a espessura de destaque, retirando de fato a borda
     button2.bind("<Enter>", lambda event, button=button2, imgName=ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, size=(20, 20): handleEventMouseEnter(event, button, imgName, size))
     button2.bind("<Leave>", lambda event, button=button2, imgName=ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE, size=(20, 20): handleEventMouseLeave(event, button, imgName, size))
-    button2.place(x=10, y=117)
+    button2.place(x=6, y=117)
 
     load_image4 = Image.open(ui_consts.IMAGE_PATH_TIME_BAR)
-    load_image4 = load_image4.resize((160, 6), Image.ANTIALIAS) #Alterando as dimensões da imagem
+    load_image4 = load_image4.resize((100, 6), Image.ANTIALIAS) #Alterando as dimensões da imagem
     render_image4 = ImageTk.PhotoImage(load_image4)
 
     label3 = Label(root, image=render_image4)
     label3.image = render_image4
     label3["bd"] = 0
     label3["highlightthickness"] = 0
-    label3.bind("<Enter>", lambda event, button=label3, imgName=ui_consts.IMAGE_PATH_TIME_BAR, size=(160, 8): handleEventMouseEnter(event, button, imgName, size))
-    label3.bind("<Leave>", lambda event, button=label3, imgName=ui_consts.IMAGE_PATH_TIME_BAR, size=(160, 6): handleEventMouseLeave(event, button, imgName, size))
-    label3.place(x=40, y=124)
+    label3.bind("<Enter>", lambda event, button=label3, imgName=ui_consts.IMAGE_PATH_TIME_BAR, size=(100, 8): handleEventMouseEnter(event, button, imgName, size))
+    label3.bind("<Leave>", lambda event, button=label3, imgName=ui_consts.IMAGE_PATH_TIME_BAR, size=(100, 6): handleEventMouseLeave(event, button, imgName, size))
+    label3.place(x=30, y=124)
+
+    label4 = Label(root)
+    label4["bg"] = ui_consts.SECOND_BG_COLOR
+    label4["text"] = ui_consts.LABEL4_INITIAL_TEXT
+    label4["fg"] = ui_consts.SECOND_FG_COLOR
+    label4["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
+    label4.place(x=195, y=118)
+
+    entry2 = Entry(root)
+    entry2["width"] = 8
+    entry2["bg"] = ui_consts.SECOND_BG_COLOR
+    entry2["fg"] = ui_consts.SECOND_FG_COLOR
+    entry2["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
+    entry2["state"] = "normal"
+    entry2.place(x=135, y=119)
+
+    printEntry(entry2, "00:00:00", CENTER)
 
     #self.list_box1 = Listbox(self.commentContainer3, selectmode=SINGLE)
     #self.list_box1.pack()
@@ -119,11 +136,12 @@ def handleEventMouseLeftClick(event, widget):
     filename = askopenfilename(filetypes=(('text files', 'txt'),))
     printEntry(widget, filename)        
 
-def printEntry(wgEntry, string):
+def printEntry(wgEntry, string, aligment = "left"):
     originalState = wgEntry["state"]
     wgEntry["state"] = "normal"
     wgEntry.delete(0, END)
     wgEntry.insert(0, string)
+    wgEntry["justify"] = aligment
     wgEntry["state"] = originalState
 
 def executaUI():
