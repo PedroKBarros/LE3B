@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 import UI.ui_constants as ui_consts
 
 def buildUI(root):
-    root.geometry('300x300')
+    root.geometry('320x300')
     root.resizable(False, False)
     root.title(ui_consts.ROOT_TITLE + " " + ui_consts.VERSION)
     root["bg"] = ui_consts.DEFAULT_BG_COLOR
@@ -40,14 +40,14 @@ def buildUI(root):
     label1["text"] = ui_consts.LABEL1_TEXT
     label1["fg"] = defaultFgColor
     label1["font"] = labelFont
-    label1.place(x=17, y=0)
+    label1.place(x=15, y=0)
 
     entry1 = Entry(root)
-    entry1["width"] = 33
+    entry1["width"] = 36
     entry1["font"] = entryFont
     entry1["state"] = "readonly" #O estado pode ser disable, normal ou readonly. 
                                         #Para escrita por código ou pelo usuário, é necessário ser "normal"
-    entry1.place(x=17, y=20)
+    entry1.place(x=15, y=20)
 
     load_image1 = Image.open(ui_consts.IMAGE_PATH_BTN_OPEN_LEAVE)
     load_image1 = load_image1.resize((50, 50), Image.ANTIALIAS) #Alterando as dimensões da imagem
@@ -60,10 +60,10 @@ def buildUI(root):
     button1.bind("<Enter>", lambda event, wgControl=button1, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_ENTER, size=(50, 50), borderSize=0: handleEventMouseEnter(event, wgControl, imgName, size, borderSize))
     button1.bind("<Leave>", lambda event, wgControl=button1, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_LEAVE, size=(50, 50), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
     button1.bind("<Button-1>", lambda event, widget=entry1: handleEventMouseLeftClick(event, widget))
-    button1.place(x=133, y=50)
+    button1.place(x=135, y=50)
 
     load_image2 = Image.open(ui_consts.IMAGE_PATH_CONTROLS_BAR)
-    load_image2 = load_image2.resize((296, 30), Image.ANTIALIAS) #Alterando as dimensões da imagem
+    load_image2 = load_image2.resize((316, 30), Image.ANTIALIAS) #Alterando as dimensões da imagem
     render_image2 = ImageTk.PhotoImage(load_image2)
 
     label2 = Label(root, image=render_image2)
@@ -115,15 +115,27 @@ def buildUI(root):
     defaultOptionMenuValue = StringVar()
     defaultOptionMenuValue.set(ui_consts.DEFAULT_OPTION_MENU1_VALUE)
     optionMenu1 = OptionMenu(root, defaultOptionMenuValue, *ui_consts.OPTION_MENU1_VALUES)
-    optionMenu1["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE1)
+    optionMenu1["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE4)
     optionMenu1["bg"] = ui_consts.CONTROLS_BG_COLOR
     optionMenu1["fg"] = ui_consts.SECOND_FG_COLOR
     optionMenu1["direction"] = "above"
     optionMenu1["highlightthickness"] = 0
     optionMenu1["relief"] = GROOVE
-    optionMenu1["width"] = 1
+    optionMenu1["width"] = 4
     optionMenu1["height"] = 1
-    optionMenu1.place(x=242, y=113)
+    optionMenu1.place(x=242, y=114)
+
+    load_image5 = Image.open(ui_consts.IMAGE_PATH_CURRENT_TIME_BAR)
+    load_image5 = load_image5.resize((20, 4), Image.ANTIALIAS) #Alterando as dimensões da imagem
+    render_image5 = ImageTk.PhotoImage(load_image5)
+
+    label5 = Label(root, image=render_image5)
+    label5.image = render_image5
+    label5["bd"] = 0
+    label5["highlightthickness"] = 0
+    label5.bind("<Enter>", lambda event, wgControl=label5, imgName=ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, size=(20, 6), borderSize=0: handleEventMouseEnter(event, wgControl, imgName, size, borderSize))
+    label5.bind("<Leave>", lambda event, wgControl=label5, imgName=ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, size=(20, 4), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
+    label5.place(x=30, y=125)
 
     #self.list_box1 = Listbox(self.commentContainer3, selectmode=SINGLE)
     #self.list_box1.pack()
