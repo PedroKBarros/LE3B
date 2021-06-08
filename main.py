@@ -21,11 +21,12 @@ def loadCommentsManagement():
     global filePath
     global file
     print(filePath)
-    #try:
-    file = open(filePath, "r", encoding="utf8")
-    loadComments()
-    #except(IOError, FileNotFoundError, FileExistsError):
-        #ui.showErrorMsgBox(main_consts.EXCEPTION_MSG_TITLE, main_consts.FILE_EXCEPTION_MSG_TEXT)
+    try:
+        file = open(filePath, "r", encoding="utf8")
+        loadComments()
+        file.close()
+    except(IOError, FileNotFoundError, FileExistsError):
+        ui.showErrorMsgBox(main_consts.EXCEPTION_MSG_TITLE, main_consts.FILE_EXCEPTION_MSG_TEXT)
 
 def loadComments():
     global commentsQueue
