@@ -45,7 +45,12 @@ def loadComments():
         if (numLinha == 3):
             text = linha
             text = text.rstrip("\n")
-            colorAbbreviated = main_consts.COLORS_ABBREVIATED_AUTHOR_NAME[randint(0, 10)]
+            comment2 = searchCommentByAuthorName(authorName)
+            if (comment2 == None):
+                colorAbbreviated = main_consts.COLORS_ABBREVIATED_AUTHOR_NAME[randint(0, 10)]
+            else:
+                #Para manter a mesma cor do(s) comentário(s) anterior(s) do mesmo autor
+                colorAbbreviated = comment2["colorAbbreviated"]
             comment = {"abbreviatedAuthorName": abbreviatedAuthorName, 
             "colorAbbreviated": colorAbbreviated, "authorName": authorName, "time": time, 
             "text": text, "state": main_consts.COMMENT_STATES[0]}
@@ -53,7 +58,14 @@ def loadComments():
             ui.addComment(comment)
             numLinha = -1
 
-        numLinha += 1    
+        numLinha += 1
+
+def searchCommentByAuthorName(authorName):
+    for i in range(commentsQueue.__len__()):
+        comment = commentsQueue.__getitem__(i)
+        if (comment["authorName"] == authorName):
+            return comment
+    return None
 
 if __name__ == "__main__":
     ui.executaUI()
