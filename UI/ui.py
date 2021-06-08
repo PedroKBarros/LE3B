@@ -7,11 +7,14 @@ import main as main
 import os.path
 from os import path
 
+root = None
 currentCommentsUIRow = 0
+totalComments = 0
 commentsFrame = None
+lblStatusBar = None
 
 def buildUI(root):
-    root.geometry('338x320')
+    root.geometry('338x480')
     root.resizable(False, False)
     root.title(ui_consts.ROOT_TITLE + " " + ui_consts.VERSION)
     root["bg"] = ui_consts.DEFAULT_BG_COLOR
@@ -147,7 +150,7 @@ def buildUI(root):
     #UI responsável pela apresentação dos comentários:    
     canvas1 = Canvas(root)
     canvas1["width"] = 318
-    canvas1["height"] = 170
+    canvas1["height"] = 300
     canvas1["highlightthickness"] = 0
     canvas1["bg"] = ui_consts.DEFAULT_BG_COLOR
     canvas1.place(x=2, y=143)
@@ -159,6 +162,15 @@ def buildUI(root):
     scrollbar1.pack(side="right", fill="y")
     canvas1.create_window((4,4), window=commentsFrame, anchor="nw")
     commentsFrame.bind("<Configure>", lambda event, canvas=canvas1: onFrameConfigure(canvas))
+
+    global lblStatusBar
+    lblStatusBar = Label(root)
+    lblStatusBar["bg"] = ui_consts.CONTROLS_BG_COLOR
+    lblStatusBar["width"] = 45
+    lblStatusBar["fg"] = ui_consts.SECOND_FG_COLOR
+    lblStatusBar["anchor"] = W
+    lblStatusBar.place(x=0, y=460)
+    
     
 def onFrameConfigure(canvas):
     '''Reset the scroll region to encompass the inner frame'''
@@ -246,6 +258,7 @@ def runMsgBoxCallback(msgBoxReturn, callbackFunction, callbackCondition):
 def addComment(comment):
     global currentCommentsUIRow
     global commentsFrame
+    global totalComments
 
     message1 = Message(commentsFrame, width = 16, font=('Verdana', 8, 'normal'), bg=comment["colorAbbreviated"], fg="#FFFFFF", bd=0)
     message1["text"] = comment["abbreviatedAuthorName"]
@@ -268,8 +281,18 @@ def addComment(comment):
     message4["padx"] = 10
 
     currentCommentsUIRow += 1
+    totalComments += 1
+
+
+def updateStatusBar(text):
+    global lblStatusBar
+    global root
+    lblStatusBar["text"] = text
+    root.update() #Para atualizar qualquer mudança visual na barra de status
+    
 
 def executaUI():
+    global root
     root = Tk()
     buildUI(root)
     root.mainloop()
