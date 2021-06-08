@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 import UI.ui_constants as ui_consts
 
 def buildUI(root):
-    root.geometry('320x300')
+    root.geometry('338x320')
     root.resizable(False, False)
     root.title(ui_consts.ROOT_TITLE + " " + ui_consts.VERSION)
     root["bg"] = ui_consts.DEFAULT_BG_COLOR
@@ -63,7 +63,7 @@ def buildUI(root):
     button1.place(x=135, y=50)
 
     load_image2 = Image.open(ui_consts.IMAGE_PATH_CONTROLS_BAR)
-    load_image2 = load_image2.resize((316, 30), Image.ANTIALIAS) #Alterando as dimensões da imagem
+    load_image2 = load_image2.resize((318, 30), Image.ANTIALIAS) #Alterando as dimensões da imagem
     render_image2 = ImageTk.PhotoImage(load_image2)
 
     label2 = Label(root, image=render_image2)
@@ -137,9 +137,24 @@ def buildUI(root):
     label5.bind("<Leave>", lambda event, wgControl=label5, imgName=ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, size=(20, 4), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
     label5.place(x=30, y=125)
 
-    #self.list_box1 = Listbox(self.commentContainer3, selectmode=SINGLE)
-    #self.list_box1.pack()
+    #UI responsável pela apresentação dos comentários:    
+    canvas1 = Canvas(root)
+    canvas1["width"] = 318
+    canvas1["height"] = 170
+    canvas1["highlightthickness"] = 0
+    canvas1["bg"] = ui_consts.DEFAULT_BG_COLOR
+    canvas1.place(x=2, y=143)
+
+    frame1 = Frame(canvas1, background = "#FFFFFF")
+    scrollbar1 = Scrollbar(root, orient = "vertical", command = canvas1.yview)
+    canvas1.configure(yscrollcommand = scrollbar1.set)
+    scrollbar1.pack(side="right", fill="y")
+    canvas1.create_window((4,4), window=frame1, anchor="nw")
+    frame1.bind("<Configure>", lambda event, canvas=canvas1: onFrameConfigure(canvas))
     
+def onFrameConfigure(canvas):
+    '''Reset the scroll region to encompass the inner frame'''
+    canvas.configure(scrollregion=canvas.bbox("all"))    
 
 def handleEventMouseEnter(event, wgControl, imgName, size, borderSize, borderColor = "black"):
     if (imgName != ""):
