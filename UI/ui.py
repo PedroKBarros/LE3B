@@ -2,6 +2,9 @@ from tkinter import *
 from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
 import UI.ui_constants as ui_consts
+import main as main
+import os.path
+from os import path
 
 def buildUI(root):
     root.geometry('338x320')
@@ -59,7 +62,7 @@ def buildUI(root):
     button1["highlightthickness"] = 0 #Para definir a espessura de destaque, retirando de fato a borda
     button1.bind("<Enter>", lambda event, wgControl=button1, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_ENTER, size=(50, 50), borderSize=0: handleEventMouseEnter(event, wgControl, imgName, size, borderSize))
     button1.bind("<Leave>", lambda event, wgControl=button1, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_LEAVE, size=(50, 50), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
-    button1.bind("<Button-1>", lambda event, widget=entry1: handleEventMouseLeftClick(event, widget))
+    button1.bind("<Button-1>", lambda event, function=loadCommentsByTxtFile, widget=entry1: handleEventMouseLeftClick(event, function,  widget))
     button1.place(x=135, y=50)
 
     load_image2 = Image.open(ui_consts.IMAGE_PATH_CONTROLS_BAR)
@@ -178,9 +181,27 @@ def handleEventMouseLeave(event, wgControl, imgName, size, borderSize, borderCol
     wgControl["highlightbackground"] = borderColor
     print("MOUSE LEAVE!")   
 
-def handleEventMouseLeftClick(event, widget):
-    filename = askopenfilename(filetypes=(('text files', 'txt'),))
-    printEntry(widget, filename)        
+def handleEventMouseLeftClick(event, function, widget = None):
+    if (widget == None):
+        function
+    else:
+        function(widget)     
+
+def loadCommentsByTxtFile(entryFilePath):
+    filepath = askopenfilename(filetypes=(('text files', 'txt'),))
+    printEntry(entryFilePath, filepath)
+
+    #Apesar da GUI de seleção de arquivos do Windows impedir a inserção de caminhos 
+    #inválidos, não dá pra garantir que tal validação acontecerá em outros SOs, 
+    #por isso se faz a validação
+    if (not isValidFilePath(filepath)):
+        return
+    
+    main.setFilePath(filepath)
+    main.commentsManagement()
+
+def isValidFilePath(filepath):
+    return os.path.exists(filepath)  
 
 def printEntry(wgEntry, string, aligment = "left"):
     originalState = wgEntry["state"]
