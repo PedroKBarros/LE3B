@@ -21,35 +21,45 @@ def loadCommentsManagement():
     global filePath
     global file
     print(filePath)
-    try:
-        file = open(filePath, "r", encoding="utf8")
-        loadComments()
-    except(IOError, FileNotFoundError, FileExistsError):
-        ui.showErrorMsgBox(main_consts.EXCEPTION_MSG_TITLE, main_consts.FILE_EXCEPTION_MSG_TEXT)
+    #try:
+    file = open(filePath, "r", encoding="utf8")
+    loadComments()
+    #except(IOError, FileNotFoundError, FileExistsError):
+        #ui.showErrorMsgBox(main_consts.EXCEPTION_MSG_TITLE, main_consts.FILE_EXCEPTION_MSG_TEXT)
 
 def loadComments():
     global commentsQueue
-    #Atenção: essa função considera que não é possível quebrar 
-    # linha em uma mensagem no chat do BigBlueButton
-    numLinha = 0
+    #Atenção: essa função considera que só é possível quebrar 
+    # linha em uma mensagem no chat do BigBlueButton, mas não 
+    # nos demais atributos do comentário
+    lineNum = 0
     totalChars = len(file.read())
     currentNumChars = 0
     file.seek(0) #Colocando o stram position do inicio do arquivo novamente
-    for linha in file:
-        if (numLinha == 0):
-            abbreviatedAuthorName = linha
+    line = file.readline()
+    while line:
+        if (lineNum == 0):
+            abbreviatedAuthorName = line
             currentNumChars += len(abbreviatedAuthorName)
             abbreviatedAuthorName = abbreviatedAuthorName.rstrip("\n")
-        if (numLinha == 1):
-            authorName = linha
+        if (lineNum == 1):
+            authorName = line
             currentNumChars += len(authorName)
             authorName = authorName.rstrip("\n")
-        if (numLinha == 2):
-            time = linha
+        if (lineNum == 2):
+            time = line
             currentNumChars += len(time)
             time = time.rstrip("\n")
-        if (numLinha == 3):
-            text = linha
+        if (lineNum == 3):
+            text = line
+            line2 = file.readline()
+            while line2 and not isAbbreviatedAuthorNameLine(line2):
+                text += line2
+                line2 = file.readline()
+            
+            s = file.tell()
+            file.seek(s - 4)
+
             currentNumChars += len(text)
             text = text.rstrip("\n")
             comment2 = searchCommentByAuthorName(authorName)
@@ -63,12 +73,16 @@ def loadComments():
             "text": text, "state": main_consts.COMMENT_STATES[0]}
             commentsQueue.append(comment)
             ui.addComment(comment)
-            numLinha = -1
+            lineNum = -1
 
         ui.updateStatusBar(main_consts.STATUS_BAR_LOAD_COMMENTS_TEXT + str(round((currentNumChars / totalChars), 2) * 100) + "%")
-        numLinha += 1
+        lineNum += 1
+        line = file.readline()
     
     ui.updateStatusBar(str(ui.totalComments) + main_consts.STATUS_BAR_LOADED_COMMENTS_TEXT)
+
+def isAbbreviatedAuthorNameLine(linha):
+    return len(linha.rstrip("\n")) == 2
 
 def searchCommentByAuthorName(authorName):
     for i in range(commentsQueue.__len__()):
