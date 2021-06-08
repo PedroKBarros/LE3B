@@ -7,6 +7,9 @@ import main as main
 import os.path
 from os import path
 
+currentCommentsUIRow = 0
+commentsFrame = None
+
 def buildUI(root):
     root.geometry('338x320')
     root.resizable(False, False)
@@ -149,12 +152,13 @@ def buildUI(root):
     canvas1["bg"] = ui_consts.DEFAULT_BG_COLOR
     canvas1.place(x=2, y=143)
 
-    frame1 = Frame(canvas1, background = "#FFFFFF")
+    global commentsFrame
+    commentsFrame = Frame(canvas1, background = "#FFFFFF")
     scrollbar1 = Scrollbar(root, orient = "vertical", command = canvas1.yview)
     canvas1.configure(yscrollcommand = scrollbar1.set)
     scrollbar1.pack(side="right", fill="y")
-    canvas1.create_window((4,4), window=frame1, anchor="nw")
-    frame1.bind("<Configure>", lambda event, canvas=canvas1: onFrameConfigure(canvas))
+    canvas1.create_window((4,4), window=commentsFrame, anchor="nw")
+    commentsFrame.bind("<Configure>", lambda event, canvas=canvas1: onFrameConfigure(canvas))
     
 def onFrameConfigure(canvas):
     '''Reset the scroll region to encompass the inner frame'''
@@ -239,6 +243,31 @@ def runMsgBoxCallback(msgBoxReturn, callbackFunction, callbackCondition):
     if (msgBoxReturn == callbackCondition):
         callbackFunction()
 
+def addComment(comment):
+    global currentCommentsUIRow
+    global commentsFrame
+
+    message1 = Message(commentsFrame, width = 16, font=('Verdana', 8, 'normal'), bg=comment["colorAbbreviated"], fg="#FFFFFF", bd=0)
+    message1["text"] = comment["abbreviatedAuthorName"]
+    message1.grid(row=currentCommentsUIRow, column=0)
+
+    message2 = Message(commentsFrame, font=('Verdana', 10, 'bold'), bg="#FFFFFF", fg="#000000", bd=0, width=200)
+    message2["text"] = comment["authorName"]
+    message2.grid(row=currentCommentsUIRow, column=1)
+    message2["padx"] = 10
+
+    message3 = Message(commentsFrame, font=('Verdana', 8, 'normal'), bg="#FFFFFF", fg="#A6A6A6", bd=0, width=100)
+    message3["text"] = comment["time"]
+    message3.grid(row=currentCommentsUIRow, column=2)
+
+    currentCommentsUIRow += 1
+    
+    message4 = Message(commentsFrame, font=('Verdana', 10, 'normal'), bg="#FFFFFF", fg="#000000", bd=0, width=200)
+    message4["text"] = comment["text"]
+    message4.grid(row=currentCommentsUIRow, column=1)
+    message4["padx"] = 10
+
+    currentCommentsUIRow += 1
 
 def executaUI():
     root = Tk()

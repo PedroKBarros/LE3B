@@ -50,6 +50,7 @@ def loadComments():
             "colorAbbreviated": colorAbbreviated, "authorName": authorName, "time": time, 
             "text": text, "state": main_consts.COMMENT_STATES[0]}
             commentsQueue.append(comment)
+            ui.addComment(comment)
             numLinha = -1
 
         numLinha += 1    
