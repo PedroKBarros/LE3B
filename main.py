@@ -16,6 +16,12 @@ def commentsManagement():
 
 def loadComments():
     pass
+    #try:
+    #file = open(filePath, "r")
+    #except(IOError, FileNotFoundError, FileExistsError):
+    #pass
+    #else: #Caso ocorra uma exceção, mas não seja nenhuma das definidas
+    
 
 if __name__ == "__main__":
     executaUI()

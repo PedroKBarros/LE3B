@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename
+from tkinter import messagebox
 from PIL import Image, ImageTk
 import UI.ui_constants as ui_consts
 import main as main
@@ -210,6 +211,34 @@ def printEntry(wgEntry, string, aligment = "left"):
     wgEntry.insert(0, string)
     wgEntry["justify"] = aligment
     wgEntry["state"] = originalState
+
+def showInfoMsgBox(title, message, callbackFunction=None, callbackCondition=None):
+    msgReturn = messagebox.showinfo(title=title, message=message)
+    runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+
+def showWarningMsgBox(title, message, callbackFunction=None, callbackCondition=None):
+    msgReturn = messagebox.showwarning(title=title, message=message)
+    runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+
+def showErrorMsgBox(title, message, callbackFunction=None, callbackCondition=None):
+    msgReturn = messagebox.showerror(title=title, message=message)
+    runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+
+def showAskOkCancelMsgBox(title, message, callbackFunction=None, callbackCondition=None):
+    msgReturn = messagebox.askokcancel(title=title, message=message)
+    runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+
+def showAskYesNoMsgBox(title, message, callbackFunction=None, callbackCondition=None):
+    msgReturn = messagebox.askyesno(title=title, message=message)
+    runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+    
+def runMsgBoxCallback(msgBoxReturn, callbackFunction, callbackCondition):
+    if (callbackCondition == None or callbackFunction == None):
+        return
+
+    if (msgBoxReturn == callbackCondition):
+        callbackFunction()
+
 
 def executaUI():
     root = Tk()
