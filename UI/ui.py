@@ -269,7 +269,7 @@ def addComment(comment):
     message2.grid(row=currentCommentsUIRow, column=1)
     message2["padx"] = 10
 
-    message3 = Message(commentsFrame, font=('Verdana', 8, 'normal'), bg="#FFFFFF", fg="#A6A6A6", bd=0, width=100)
+    message3 = Message(commentsFrame, font=('Verdana', 8, 'normal'), bg="#FFFFFF", fg="#808080", bd=0, width=100)
     message3["text"] = comment["time"]
     message3.grid(row=currentCommentsUIRow, column=2)
 
@@ -290,6 +290,14 @@ def updateStatusBar(text):
     lblStatusBar["text"] = text
     root.update() #Para atualizar qualquer mudança visual na barra de status
     
+def deleteAllComments():
+    global currentCommentsUIRow
+    global totalComments
+    global commentsFrame
+    for widgets in commentsFrame.winfo_children():
+        widgets.destroy()
+    currentCommentsUIRow = 0
+    totalComments = 0
 
 def executaUI():
     global root

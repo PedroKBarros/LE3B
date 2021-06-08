@@ -23,6 +23,7 @@ def loadCommentsManagement():
     print(filePath)
     try:
         file = open(filePath, "r", encoding="utf8")
+        ui.deleteAllComments()
         loadComments()
         file.close()
     except(IOError, FileNotFoundError, FileExistsError):
