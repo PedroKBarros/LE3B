@@ -186,15 +186,6 @@ def buildUI(root):
     lblCurrentTimeBar.image = render_image5
     lblCurrentTimeBar["bd"] = 0
     lblCurrentTimeBar["highlightthickness"] = 0
-    #Mouse Leave e Enter:
-    imgData1 = (ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, (1, 6), None, None)
-    imgData2 = (ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, (1, 4), None, None)
-    lblCurrentTimeBar.bind("<Enter>", lambda event, wgControl=lblCurrentTimeBar, borderSize=0, 
-    borderColor="white", imgData1=imgData1: 
-    handleEventMouseEnter(event, wgControl, borderSize, borderColor, imgData1))
-    lblCurrentTimeBar.bind("<Leave>", lambda event, wgControl=lblCurrentTimeBar, borderSize=0, 
-    borderColor="white", imgData1=imgData2: 
-    handleEventMouseLeave(event, wgControl, borderSize, borderColor, imgData1))
     lblCurrentTimeBar.place(x=10, y=145)
 
     #UI responsável pela apresentação dos comentários:    
