@@ -15,6 +15,7 @@ lblStatusBar = None
 etrCurrentTime = None
 lblTotalTime = None
 lblCurrentTimeBar = None
+lastWidgetFocusIn = None
 
 def buildUI(root):
     root.geometry('338x500')
@@ -149,7 +150,11 @@ def buildUI(root):
     lblTotalTime.place(x=140, y=118)
 
     global etrCurrentTime
-    etrCurrentTime = Entry(root)
+    var = StringVar()
+    var.trace("w", lambda name, index,mode, var=var: handleEtrCurrentTimeChange(var))
+    #Com a variável var e o método trace, é possível associar uma função de callback toda vez
+    # que o valor da etrCurrentTime for modificado.
+    etrCurrentTime = Entry(root, textvariable=var, name=ui_consts.ETR_CURRENT_TIME_NAME) #Colocado o nome para que possamos saber se o evento FocusIn foi disparado por esse widget
     etrCurrentTime["width"] = 8
     etrCurrentTime["bg"] = ui_consts.SECOND_BG_COLOR
     etrCurrentTime["fg"] = ui_consts.SECOND_FG_COLOR
@@ -160,6 +165,8 @@ def buildUI(root):
     handleEventMouseEnter(event, wgControl, borderSize, borderColor))
     etrCurrentTime.bind("<Leave>", lambda event, wgControl=etrCurrentTime, borderSize=0: 
     handleEventMouseLeave(event, wgControl, borderSize))
+    etrCurrentTime.bind("<FocusIn>", lambda event, wgControl=etrCurrentTime, borderSize=0: 
+    handleEventFocusIn(event, wgControl, borderSize))
     etrCurrentTime.place(x=72, y=119)
     printEntry(etrCurrentTime, "00:00:00", CENTER)
 
@@ -216,52 +223,26 @@ def onFrameConfigure(canvas):
     '''Reset the scroll region to encompass the inner frame'''
     canvas.configure(scrollregion=canvas.bbox("all"))
 
-def handleEventMouseEnter(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None, execConditionFunc = None, execConditionValue = None):
+def handleEventMouseEnter(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, 
+function = None, execConditionFunc = None, execConditionValue = None):
     #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
-    if (execConditionFunc != None or execConditionValue != None):
-        if (execConditionFunc() != execConditionValue):
-            return
-
-    changeImg = False
-    if (imgData1 != None):
-        if (imgData1[2] != None):
-            if (imgData1[2]() == imgData1[3]):
-                load_image = Image.open(imgData1[0])
-                load_image = load_image.resize(imgData1[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
-                render_image = ImageTk.PhotoImage(load_image)
-                wgControl.configure(image=render_image)
-                wgControl.image = render_image
-                changeImg = True
-        else:
-            load_image = Image.open(imgData1[0])
-            load_image = load_image.resize(imgData1[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
-            render_image = ImageTk.PhotoImage(load_image)
-            wgControl.configure(image=render_image)
-            wgControl.image = render_image
-            changeImg = True
-    if (imgData2 != None and not changeImg):
-        if (imgData2[2] != None):
-            if (imgData2[2]() == imgData2[3]):
-                load_image = Image.open(imgData2[0])
-                load_image = load_image.resize(imgData2[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
-                render_image = ImageTk.PhotoImage(load_image)
-                wgControl.configure(image=render_image)
-                wgControl.image = render_image
-        else:
-            load_image = Image.open(imgData2[0])
-            load_image = load_image.resize(imgData2[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
-            render_image = ImageTk.PhotoImage(load_image)
-            wgControl.configure(image=render_image)
-            wgControl.image = render_image
-    wgControl["highlightthickness"] = borderSize
-    wgControl["highlightbackground"] = borderColor
-
-    if (function != None):
-        function()
-
+    handleEvent(event, wgControl, borderSize, borderColor, imgData1, imgData2, function, execConditionFunc, execConditionValue)
     print("MOUSE ENTER!")
 
-def handleEventMouseLeave(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None, execConditionFunc = None, execConditionValue = None):
+def handleEventFocusIn(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, 
+function = None, execConditionFunc = None, execConditionValue = None):
+    #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
+    global lastWidgetFocusIn
+    lastWidgetFocusIn = str(event.widget)
+    handleEvent(event, wgControl, borderSize, borderColor, imgData1, imgData2, function, execConditionFunc, execConditionValue)
+
+def handleEventFocusOut(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, 
+function = None, execConditionFunc = None, execConditionValue = None):
+    #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
+    handleEvent(event, wgControl, borderSize, borderColor, imgData1, imgData2, function, execConditionFunc, execConditionValue)
+
+def handleEvent(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, 
+function = None, execConditionFunc = None, execConditionValue = None):
     #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
     if (execConditionFunc != None or execConditionValue != None):
         if (execConditionFunc() != execConditionValue):
@@ -303,50 +284,18 @@ def handleEventMouseLeave(event, wgControl, borderSize = 1, borderColor = "black
 
     if (function != None):
         function()
+    
+
+def handleEventMouseLeave(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, 
+function = None, execConditionFunc = None, execConditionValue = None):
+    #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
+    handleEvent(event, wgControl, borderSize, borderColor, imgData1, imgData2, function, execConditionFunc, execConditionValue)
     print("MOUSE LEAVE!")
 
-def handleEventMouseLeftClick(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None, execConditionFunc = None, execConditionValue = None):
+def handleEventMouseLeftClick(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, 
+function = None, execConditionFunc = None, execConditionValue = None):
     #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
-    if (execConditionFunc != None or execConditionValue != None):
-        if (execConditionFunc() != execConditionValue):
-            return
-
-    changeImg = False
-    if (imgData1 != None):
-        if (imgData1[2] != None):
-            if (imgData1[2]() == imgData1[3]):
-                load_image = Image.open(imgData1[0])
-                load_image = load_image.resize(imgData1[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
-                render_image = ImageTk.PhotoImage(load_image)
-                wgControl.configure(image=render_image)
-                wgControl.image = render_image
-                changeImg = True
-        else:
-            load_image = Image.open(imgData1[0])
-            load_image = load_image.resize(imgData1[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
-            render_image = ImageTk.PhotoImage(load_image)
-            wgControl.configure(image=render_image)
-            wgControl.image = render_image
-            changeImg = True
-    if (imgData2 != None and not changeImg):
-        if (imgData2[2] != None):
-            if (imgData2[2]() == imgData2[3]):
-                load_image = Image.open(imgData2[0])
-                load_image = load_image.resize(imgData2[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
-                render_image = ImageTk.PhotoImage(load_image)
-                wgControl.configure(image=render_image)
-                wgControl.image = render_image
-        else:
-            load_image = Image.open(imgData2[0])
-            load_image = load_image.resize(imgData2[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
-            render_image = ImageTk.PhotoImage(load_image)
-            wgControl.configure(image=render_image)
-            wgControl.image = render_image
-    wgControl["highlightthickness"] = borderSize
-    wgControl["highlightbackground"] = borderColor
-
-    if (function != None):
-        function()
+    handleEvent(event, wgControl, borderSize, borderColor, imgData1, imgData2, function, execConditionFunc, execConditionValue)
 
 def loadCommentsByTxtFile(entryFilePath):
     filepath = askopenfilename(filetypes=(('text files', 'txt'),))
@@ -488,6 +437,27 @@ def updateUITotalTime(text):
 
 def handleOptionMenuSelectChange(value):
     main.updateTimeVelocityByUI(float(value.rstrip("x")))
+
+def handleEtrCurrentTimeChange(var):
+    if (not isEtrCurrentTimeLastWidgetFocusIn()):
+        return
+
+    content = var.get()
+    if (len(content) == 0):
+        return
+    if (not content.isascii()): #Verifica se todos os caracteres são ascii
+        var.set("")
+    lastCharInput = content[len(content) - 1]
+    if (not isCharAsciiNumber(lastCharInput)):
+        var.set(content[0:len(content) - 1])
+
+def isCharAsciiNumber(char):
+    return ord(char) >= 48 and ord(char) <= 57
+    
+    
+def isEtrCurrentTimeLastWidgetFocusIn():
+    global lastWidgetFocusIn
+    return lastWidgetFocusIn == "." + ui_consts.ETR_CURRENT_TIME_NAME
 
 def executaUI():
     global root
