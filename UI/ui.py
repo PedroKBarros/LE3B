@@ -14,9 +14,10 @@ commentsFrame = None
 lblStatusBar = None
 etrCurrentTime = None
 lblTotalTime = None
+lblCurrentTimeBar = None
 
 def buildUI(root):
-    root.geometry('338x480')
+    root.geometry('338x500')
     root.resizable(False, False)
     root.title(ui_consts.ROOT_TITLE + " " + ui_consts.VERSION)
     root["bg"] = ui_consts.DEFAULT_BG_COLOR
@@ -84,7 +85,7 @@ def buildUI(root):
     button1.place(x=135, y=50)
 
     load_image2 = Image.open(ui_consts.IMAGE_PATH_CONTROLS_BAR)
-    load_image2 = load_image2.resize((318, 30), Image.ANTIALIAS) #Alterando as dimensões da imagem
+    load_image2 = load_image2.resize((318, 50), Image.ANTIALIAS) #Alterando as dimensões da imagem
     render_image2 = ImageTk.PhotoImage(load_image2)
 
     label2 = Label(root, image=render_image2)
@@ -92,7 +93,7 @@ def buildUI(root):
     label2.place(x=0, y=110)
 
     load_image3 = Image.open(ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE)
-    load_image3 = load_image3.resize((20, 20), Image.ANTIALIAS) #Alterando as dimensões da imagem
+    load_image3 = load_image3.resize((22, 22), Image.ANTIALIAS) #Alterando as dimensões da imagem
     render_image3 = ImageTk.PhotoImage(load_image3)
 
     button2 = Button(root, image=render_image3)
@@ -100,13 +101,13 @@ def buildUI(root):
     button2["bd"] = 0 #Para definir a borda, tornando-a mínima
     button2["highlightthickness"] = 0 #Para definir a espessura de destaque, retirando de fato a borda
     #Mouse Leave e Enter:
-    imgData1 = (ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, (20, 20), main.isTimeStatePlay, False)
-    imgData2 = (ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE, (20, 20), main.isTimeStatePlay, False)
-    imgData3 = (ui_consts.IMAGE_PATH_BTN_PAUSE_ENTER, (20, 20), main.isTimeStatePlay, True)
-    imgData4 = (ui_consts.IMAGE_PATH_BTN_PAUSE_LEAVE, (20, 20), main.isTimeStatePlay, True)
+    imgData1 = (ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, (22, 22), main.isTimeStatePlay, False)
+    imgData2 = (ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE, (22, 22), main.isTimeStatePlay, False)
+    imgData3 = (ui_consts.IMAGE_PATH_BTN_PAUSE_ENTER, (22, 22), main.isTimeStatePlay, True)
+    imgData4 = (ui_consts.IMAGE_PATH_BTN_PAUSE_LEAVE, (22, 22), main.isTimeStatePlay, True)
     #Button-1:
-    imgData6 = (ui_consts.IMAGE_PATH_BTN_PAUSE_ENTER, (20, 20), main.isTimeStatePlay, False)
-    imgData7 = (ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, (20, 20), main.isTimeStatePlay, True)
+    imgData6 = (ui_consts.IMAGE_PATH_BTN_PAUSE_ENTER, (22, 22), main.isTimeStatePlay, False)
+    imgData7 = (ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, (22, 22), main.isTimeStatePlay, True)
     button2.bind("<Enter>", lambda event, wgControl=button2, borderSize=0, borderColor="white", 
     imgData1=imgData1, imgData2=imgData3: handleEventMouseEnter(event, wgControl, borderSize, 
     borderColor, imgData1, imgData2))
@@ -118,10 +119,10 @@ def buildUI(root):
     function = handleEventPlayPauseButtonMouseLeftClick, execConditionFunc=main.isEndTime, execConditionValue=False: 
     handleEventMouseLeftClick(event, wgControl, borderSize, borderColor, 
     imgData1, imgData2, function, execConditionFunc, execConditionValue))
-    button2.place(x=6, y=117)
+    button2.place(x=7, y=117)
 
     load_image4 = Image.open(ui_consts.IMAGE_PATH_TIME_BAR)
-    load_image4 = load_image4.resize((80, 6), Image.ANTIALIAS) #Alterando as dimensões da imagem
+    load_image4 = load_image4.resize(ui_consts.IMAGE_PATH_TIME_BAR_SIZE_MIN, Image.ANTIALIAS) #Alterando as dimensões da imagem
     render_image4 = ImageTk.PhotoImage(load_image4)
 
     label3 = Label(root, image=render_image4)
@@ -129,79 +130,80 @@ def buildUI(root):
     label3["bd"] = 0
     label3["highlightthickness"] = 0
     #Mouse Leave e Enter:
-    imgData1 = (ui_consts.IMAGE_PATH_TIME_BAR, (80, 8), None, None)
-    imgData2 = (ui_consts.IMAGE_PATH_TIME_BAR, (80, 6), None, None)
+    imgData1 = (ui_consts.IMAGE_PATH_TIME_BAR, ui_consts.IMAGE_PATH_TIME_BAR_SIZE_MAX, None, None)
+    imgData2 = (ui_consts.IMAGE_PATH_TIME_BAR, ui_consts.IMAGE_PATH_TIME_BAR_SIZE_MIN, None, None)
     label3.bind("<Enter>", lambda event, wgControl=label3, borderSize=0,
     borderColor="white", imgData1=imgData1: 
     handleEventMouseEnter(event, wgControl, borderSize, borderColor, imgData1))
     label3.bind("<Leave>", lambda event, wgControl=label3, borderSize=0, 
     borderColor="white", imgData1=imgData2: 
     handleEventMouseLeave(event, wgControl, borderSize, borderColor, imgData1))
-    label3.place(x=30, y=124)
+    label3.place(x=10, y=145)
 
     global lblTotalTime
     lblTotalTime = Label(root)
     lblTotalTime["bg"] = ui_consts.SECOND_BG_COLOR
     lblTotalTime["text"] = ui_consts.LABEL4_INITIAL_TEXT
     lblTotalTime["fg"] = ui_consts.SECOND_FG_COLOR
-    lblTotalTime["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
-    lblTotalTime.place(x=173, y=118)
+    lblTotalTime["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE1)
+    lblTotalTime.place(x=140, y=118)
 
     global etrCurrentTime
     etrCurrentTime = Entry(root)
     etrCurrentTime["width"] = 8
     etrCurrentTime["bg"] = ui_consts.SECOND_BG_COLOR
     etrCurrentTime["fg"] = ui_consts.SECOND_FG_COLOR
-    etrCurrentTime["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
+    etrCurrentTime["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE1)
     etrCurrentTime["state"] = "normal"
     etrCurrentTime.bind("<Enter>", lambda event, wgControl=etrCurrentTime, borderSize=0.5, 
     borderColor=ui_consts.SECOND_BC_HIGHLIGHT_COLOR: 
     handleEventMouseEnter(event, wgControl, borderSize, borderColor))
     etrCurrentTime.bind("<Leave>", lambda event, wgControl=etrCurrentTime, borderSize=0: 
     handleEventMouseLeave(event, wgControl, borderSize))
-    etrCurrentTime.place(x=115, y=119)
+    etrCurrentTime.place(x=72, y=119)
     printEntry(etrCurrentTime, "00:00:00", CENTER)
 
     defaultOptionMenuValue = StringVar()
     defaultOptionMenuValue.set(ui_consts.DEFAULT_OPTION_MENU1_VALUE)
     optionMenu1 = OptionMenu(root, defaultOptionMenuValue, *ui_consts.OPTION_MENU1_VALUES)
-    optionMenu1["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE4)
+    optionMenu1["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE1)
     optionMenu1["bg"] = ui_consts.CONTROLS_BG_COLOR
     optionMenu1["fg"] = ui_consts.SECOND_FG_COLOR
-    optionMenu1["bd"] = 1
+    optionMenu1["bd"] = 0
     optionMenu1["direction"] = "above"
     optionMenu1["highlightthickness"] = 0
     optionMenu1["relief"] = GROOVE
     optionMenu1["width"] = 4
     optionMenu1["height"] = 1
-    optionMenu1.place(x=242, y=116)
+    optionMenu1.place(x=247, y=117)
 
     load_image5 = Image.open(ui_consts.IMAGE_PATH_CURRENT_TIME_BAR)
-    load_image5 = load_image5.resize((20, 4), Image.ANTIALIAS) #Alterando as dimensões da imagem
+    load_image5 = load_image5.resize((1, 4), Image.ANTIALIAS) #Alterando as dimensões da imagem
     render_image5 = ImageTk.PhotoImage(load_image5)
 
-    label5 = Label(root, image=render_image5)
-    label5.image = render_image5
-    label5["bd"] = 0
-    label5["highlightthickness"] = 0
+    global lblCurrentTimeBar
+    lblCurrentTimeBar = Label(root, image=render_image5)
+    lblCurrentTimeBar.image = render_image5
+    lblCurrentTimeBar["bd"] = 0
+    lblCurrentTimeBar["highlightthickness"] = 0
     #Mouse Leave e Enter:
-    imgData1 = (ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, (20, 6), None, None)
-    imgData2 = (ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, (20, 4), None, None)
-    label5.bind("<Enter>", lambda event, wgControl=label5, borderSize=0, 
+    imgData1 = (ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, (1, 6), None, None)
+    imgData2 = (ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, (1, 4), None, None)
+    lblCurrentTimeBar.bind("<Enter>", lambda event, wgControl=lblCurrentTimeBar, borderSize=0, 
     borderColor="white", imgData1=imgData1: 
     handleEventMouseEnter(event, wgControl, borderSize, borderColor, imgData1))
-    label5.bind("<Leave>", lambda event, wgControl=label5, borderSize=0, 
+    lblCurrentTimeBar.bind("<Leave>", lambda event, wgControl=lblCurrentTimeBar, borderSize=0, 
     borderColor="white", imgData1=imgData2: 
     handleEventMouseLeave(event, wgControl, borderSize, borderColor, imgData1))
-    label5.place(x=30, y=125)
+    lblCurrentTimeBar.place(x=10, y=145)
 
     #UI responsável pela apresentação dos comentários:    
     canvas1 = Canvas(root)
     canvas1["width"] = 318
-    canvas1["height"] = 300
+    canvas1["height"] = 320
     canvas1["highlightthickness"] = 0
     canvas1["bg"] = ui_consts.DEFAULT_BG_COLOR
-    canvas1.place(x=2, y=143)
+    canvas1.place(x=2, y=163)
 
     global commentsFrame
     commentsFrame = Frame(canvas1, background = "#FFFFFF")
@@ -217,7 +219,7 @@ def buildUI(root):
     lblStatusBar["width"] = 45
     lblStatusBar["fg"] = ui_consts.SECOND_FG_COLOR
     lblStatusBar["anchor"] = W
-    lblStatusBar.place(x=0, y=460)
+    lblStatusBar.place(x=0, y=480)
     
 def onFrameConfigure(canvas):
     '''Reset the scroll region to encompass the inner frame'''
@@ -464,13 +466,28 @@ def handleEventPlayPauseButtonMouseLeftClick():
     
     main.timeManagement()
 
-
-
 def updateUICurrentTime(text):
     global etrCurrentTime
     global root
     printEntry(etrCurrentTime, text, aligment="center")
     root.update()
+
+def updateUICurrentTimeBar(width):
+    global lblCurrentTimeBar
+
+    if (width == 0):
+        lblCurrentTimeBar.place_forget() #Para torna não visível o widget
+        return
+
+    lblCurrentTimeBar.place(x=10, y=145)
+    load_image = Image.open(ui_consts.IMAGE_PATH_CURRENT_TIME_BAR)
+    load_image = load_image.resize((width, lblCurrentTimeBar.image.height()), Image.ANTIALIAS)
+    render_image = ImageTk.PhotoImage(load_image)
+
+    lblCurrentTimeBar = Label(root, image=render_image)
+    lblCurrentTimeBar.image = render_image
+    lblCurrentTimeBar["bd"] = 0
+    lblCurrentTimeBar["highlightthickness"] = 0
 
 def updateUITotalTime(text):
     global lblTotalTime

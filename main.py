@@ -27,7 +27,15 @@ def updateTotalTime():
     global commentsQueue
     strTotalTime = commentsQueue[len(commentsQueue) - 1]["time"]
     timeData["totalTime"] = convertStrTimeToSeconds(strTotalTime)
-    ui.updateUITotalTime(strTotalTime)
+    ui.updateUITotalTime(" / " + strTotalTime)
+
+def updateCurrentTimeBar():
+    global timeData
+
+    maxWidthCurrentTimeBar = ui_consts.IMAGE_PATH_TIME_BAR_SIZE_MAX[0]
+    pastTimeRazon = timeData["currentTime"] / timeData["totalTime"]
+    currentTimeBarWidth = maxWidthCurrentTimeBar * pastTimeRazon
+    ui.updateUICurrentTimeBar(int(currentTimeBarWidth))
 
 def convertStrTimeToSeconds(strTime):
     h, m, s = strTime.split(':')
@@ -56,9 +64,11 @@ def countTime():
         timeData["currentTime"] += timeData["velocity"]
         timeDiff = timeData["currentTime"] - timeData["initialTime"]
         ui.updateUICurrentTime(convertsecondsToUIFormat(timeDiff))
+        updateCurrentTimeBar()
     
     if (isEndTime()):
         ui.handleEventPlayPauseButtonMouseLeftClick()
+        ui.updateUICurrentTimeBar(ui_consts.IMAGE_PATH_TIME_BAR_SIZE_MAX[0])
 
 def isEndTime():
     global timeData
