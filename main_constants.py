@@ -10,3 +10,5 @@ COLORS_ABBREVIATED_AUTHOR_NAME = ("#1565C0", "#6A1B9A", "#1A237E", "#311B92", "#
                                   "#283593")
 STATUS_BAR_LOAD_COMMENTS_TEXT = "Carregando comentários..."
 STATUS_BAR_LOADED_COMMENTS_TEXT = " comentários carregados. 0 lidos."
+PLAY_TIME_STATE = True
+STOP_TIME_STATE = False

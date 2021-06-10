@@ -12,6 +12,7 @@ currentCommentsUIRow = 0
 totalComments = 0
 commentsFrame = None
 lblStatusBar = None
+etrCurrentTime = None
 
 def buildUI(root):
     root.geometry('338x480')
@@ -67,9 +68,18 @@ def buildUI(root):
     button1.image = render_image1
     button1["bd"] = 0 #Para definir a borda, tornando-a mínima
     button1["highlightthickness"] = 0 #Para definir a espessura de destaque, retirando de fato a borda
-    button1.bind("<Enter>", lambda event, wgControl=button1, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_ENTER, size=(50, 50), borderSize=0: handleEventMouseEnter(event, wgControl, imgName, size, borderSize))
-    button1.bind("<Leave>", lambda event, wgControl=button1, imgName=ui_consts.IMAGE_PATH_BTN_OPEN_LEAVE, size=(50, 50), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
-    button1.bind("<Button-1>", lambda event, function=loadCommentsByTxtFile, widget=entry1: handleEventMouseLeftClick(event, function,  widget))
+    #Mouse Leave e Enter:
+    imgData1 = (ui_consts.IMAGE_PATH_BTN_OPEN_ENTER, (50, 50), None, None)
+    imgData2 = (ui_consts.IMAGE_PATH_BTN_OPEN_LEAVE, (50, 50), None, None)
+    button1.bind("<Enter>", lambda event, wgControl=button1, borderSize=0, 
+    borderColor="white", imgData1=imgData1: 
+    handleEventMouseEnter(event, wgControl, borderSize, borderColor, imgData1))
+    button1.bind("<Leave>", lambda event, wgControl=button1, borderSize=0, 
+    borderColor="white", imgData1=imgData2: 
+    handleEventMouseLeave(event, wgControl, borderSize, borderColor, imgData1))
+    button1.bind("<Button-1>", lambda event, wgControl=button1, borderSize=0, 
+    borderColor="white", function=loadCommentsByTxtFile: 
+    handleEventMouseLeftClick(event, wgControl, borderSize, borderColor, None, None, function(entry1)))
     button1.place(x=135, y=50)
 
     load_image2 = Image.open(ui_consts.IMAGE_PATH_CONTROLS_BAR)
@@ -88,8 +98,25 @@ def buildUI(root):
     button2.image = render_image3
     button2["bd"] = 0 #Para definir a borda, tornando-a mínima
     button2["highlightthickness"] = 0 #Para definir a espessura de destaque, retirando de fato a borda
-    button2.bind("<Enter>", lambda event, wgControl=button2, imgName=ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, size=(20, 20), borderSize=0: handleEventMouseEnter(event, wgControl, imgName, size, borderSize))
-    button2.bind("<Leave>", lambda event, wgControl=button2, imgName=ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE, size=(20, 20), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
+    #Mouse Leave e Enter:
+    imgData1 = (ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, (20, 20), main.isTimeStatePlay, False)
+    imgData2 = (ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE, (20, 20), main.isTimeStatePlay, False)
+    imgData3 = (ui_consts.IMAGE_PATH_BTN_PAUSE_ENTER, (20, 20), main.isTimeStatePlay, True)
+    imgData4 = (ui_consts.IMAGE_PATH_BTN_PAUSE_LEAVE, (20, 20), main.isTimeStatePlay, True)
+    #Button-1:
+    imgData6 = (ui_consts.IMAGE_PATH_BTN_PAUSE_ENTER, (20, 20), main.isTimeStatePlay, False)
+    imgData7 = (ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, (20, 20), main.isTimeStatePlay, True)
+    button2.bind("<Enter>", lambda event, wgControl=button2, borderSize=0, borderColor="white", 
+    imgData1=imgData1, imgData2=imgData3: handleEventMouseEnter(event, wgControl, borderSize, 
+    borderColor, imgData1, imgData2))
+    button2.bind("<Leave>", lambda event, wgControl=button2, borderSize=0, borderColor="white", 
+    imgData1=imgData2, imgData2=imgData4: handleEventMouseLeave(event, wgControl, borderSize, 
+    borderColor, imgData1, imgData2))
+    button2.bind("<Button-1>", lambda event, wgControl=button2, borderSize=0, 
+    borderColor="white", imgData1=imgData6, imgData2=imgData7, 
+    function = handleEventPlayPauseButtonMouseLeftClick: 
+    handleEventMouseLeftClick(event, wgControl, borderSize, borderColor, 
+    imgData1, imgData2, function))
     button2.place(x=6, y=117)
 
     load_image4 = Image.open(ui_consts.IMAGE_PATH_TIME_BAR)
@@ -100,8 +127,15 @@ def buildUI(root):
     label3.image = render_image4
     label3["bd"] = 0
     label3["highlightthickness"] = 0
-    label3.bind("<Enter>", lambda event, wgControl=label3, imgName=ui_consts.IMAGE_PATH_TIME_BAR, size=(80, 8), borderSize=0: handleEventMouseEnter(event, wgControl, imgName, size, borderSize))
-    label3.bind("<Leave>", lambda event, wgControl=label3, imgName=ui_consts.IMAGE_PATH_TIME_BAR, size=(80, 6), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
+    #Mouse Leave e Enter:
+    imgData1 = (ui_consts.IMAGE_PATH_TIME_BAR, (80, 8), None, None)
+    imgData2 = (ui_consts.IMAGE_PATH_TIME_BAR, (80, 6), None, None)
+    label3.bind("<Enter>", lambda event, wgControl=label3, borderSize=0,
+    borderColor="white", imgData1=imgData1: 
+    handleEventMouseEnter(event, wgControl, borderSize, borderColor, imgData1))
+    label3.bind("<Leave>", lambda event, wgControl=label3, borderSize=0, 
+    borderColor="white", imgData1=imgData2: 
+    handleEventMouseLeave(event, wgControl, borderSize, borderColor, imgData1))
     label3.place(x=30, y=124)
 
     label4 = Label(root)
@@ -111,16 +145,20 @@ def buildUI(root):
     label4["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
     label4.place(x=173, y=118)
 
-    entry2 = Entry(root)
-    entry2["width"] = 8
-    entry2["bg"] = ui_consts.SECOND_BG_COLOR
-    entry2["fg"] = ui_consts.SECOND_FG_COLOR
-    entry2["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
-    entry2["state"] = "normal"
-    entry2.bind("<Enter>", lambda event, wgControl=entry2, imgName="", size=(0, 0), borderSize=0.5, borderColor=ui_consts.SECOND_BC_HIGHLIGHT_COLOR: handleEventMouseEnter(event, wgControl, imgName, size, borderSize, borderColor))
-    entry2.bind("<Leave>", lambda event, wgControl=entry2, imgName="", size=(0, 0), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
-    entry2.place(x=115, y=119)
-    printEntry(entry2, "00:00:00", CENTER)
+    global etrCurrentTime
+    etrCurrentTime = Entry(root)
+    etrCurrentTime["width"] = 8
+    etrCurrentTime["bg"] = ui_consts.SECOND_BG_COLOR
+    etrCurrentTime["fg"] = ui_consts.SECOND_FG_COLOR
+    etrCurrentTime["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
+    etrCurrentTime["state"] = "normal"
+    etrCurrentTime.bind("<Enter>", lambda event, wgControl=etrCurrentTime, borderSize=0.5, 
+    borderColor=ui_consts.SECOND_BC_HIGHLIGHT_COLOR: 
+    handleEventMouseEnter(event, wgControl, borderSize, borderColor))
+    etrCurrentTime.bind("<Leave>", lambda event, wgControl=etrCurrentTime, borderSize=0: 
+    handleEventMouseLeave(event, wgControl, borderSize))
+    etrCurrentTime.place(x=115, y=119)
+    printEntry(etrCurrentTime, "00:00:00", CENTER)
 
     defaultOptionMenuValue = StringVar()
     defaultOptionMenuValue.set(ui_consts.DEFAULT_OPTION_MENU1_VALUE)
@@ -143,8 +181,15 @@ def buildUI(root):
     label5.image = render_image5
     label5["bd"] = 0
     label5["highlightthickness"] = 0
-    label5.bind("<Enter>", lambda event, wgControl=label5, imgName=ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, size=(20, 6), borderSize=0: handleEventMouseEnter(event, wgControl, imgName, size, borderSize))
-    label5.bind("<Leave>", lambda event, wgControl=label5, imgName=ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, size=(20, 4), borderSize=0: handleEventMouseLeave(event, wgControl, imgName, size, borderSize))
+    #Mouse Leave e Enter:
+    imgData1 = (ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, (20, 6), None, None)
+    imgData2 = (ui_consts.IMAGE_PATH_CURRENT_TIME_BAR, (20, 4), None, None)
+    label5.bind("<Enter>", lambda event, wgControl=label5, borderSize=0, 
+    borderColor="white", imgData1=imgData1: 
+    handleEventMouseEnter(event, wgControl, borderSize, borderColor, imgData1))
+    label5.bind("<Leave>", lambda event, wgControl=label5, borderSize=0, 
+    borderColor="white", imgData1=imgData2: 
+    handleEventMouseLeave(event, wgControl, borderSize, borderColor, imgData1))
     label5.place(x=30, y=125)
 
     #UI responsável pela apresentação dos comentários:    
@@ -171,38 +216,129 @@ def buildUI(root):
     lblStatusBar["anchor"] = W
     lblStatusBar.place(x=0, y=460)
     
-    
 def onFrameConfigure(canvas):
     '''Reset the scroll region to encompass the inner frame'''
-    canvas.configure(scrollregion=canvas.bbox("all"))    
+    canvas.configure(scrollregion=canvas.bbox("all"))
 
-def handleEventMouseEnter(event, wgControl, imgName, size, borderSize, borderColor = "black"):
-    if (imgName != ""):
-        load_image2 = Image.open(imgName)
-        load_image2 = load_image2.resize(size, Image.ANTIALIAS) #Alterando as dimensões da imagem
-        render_image2 = ImageTk.PhotoImage(load_image2)
-        wgControl.configure(image=render_image2)
-        wgControl.image = render_image2
+def handleEventMouseEnter(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None):
+    #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
+    changeImg = False
+    if (imgData1 != None):
+        if (imgData1[2] != None):
+            if (imgData1[2]() == imgData1[3]):
+                load_image = Image.open(imgData1[0])
+                load_image = load_image.resize(imgData1[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+                render_image = ImageTk.PhotoImage(load_image)
+                wgControl.configure(image=render_image)
+                wgControl.image = render_image
+                changeImg = True
+        else:
+            load_image = Image.open(imgData1[0])
+            load_image = load_image.resize(imgData1[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+            render_image = ImageTk.PhotoImage(load_image)
+            wgControl.configure(image=render_image)
+            wgControl.image = render_image
+            changeImg = True
+    if (imgData2 != None and not changeImg):
+        if (imgData2[2] != None):
+            if (imgData2[2]() == imgData2[3]):
+                load_image = Image.open(imgData2[0])
+                load_image = load_image.resize(imgData2[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+                render_image = ImageTk.PhotoImage(load_image)
+                wgControl.configure(image=render_image)
+                wgControl.image = render_image
+        else:
+            load_image = Image.open(imgData2[0])
+            load_image = load_image.resize(imgData2[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+            render_image = ImageTk.PhotoImage(load_image)
+            wgControl.configure(image=render_image)
+            wgControl.image = render_image
     wgControl["highlightthickness"] = borderSize
     wgControl["highlightbackground"] = borderColor
+
+    if (function != None):
+        function()
+
     print("MOUSE ENTER!")
 
-def handleEventMouseLeave(event, wgControl, imgName, size, borderSize, borderColor = "black"):
-    if (imgName != ""):
-        load_image2 = Image.open(imgName)
-        load_image2 = load_image2.resize(size, Image.ANTIALIAS) #Alterando as dimensões da imagem
-        render_image2 = ImageTk.PhotoImage(load_image2)
-        wgControl.configure(image=render_image2)
-        wgControl.image = render_image2
+def handleEventMouseLeave(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None):
+    #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
+    changeImg = False
+    if (imgData1 != None):
+        if (imgData1[2] != None):
+            if (imgData1[2]() == imgData1[3]):
+                load_image = Image.open(imgData1[0])
+                load_image = load_image.resize(imgData1[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+                render_image = ImageTk.PhotoImage(load_image)
+                wgControl.configure(image=render_image)
+                wgControl.image = render_image
+                changeImg = True
+        else:
+            load_image = Image.open(imgData1[0])
+            load_image = load_image.resize(imgData1[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+            render_image = ImageTk.PhotoImage(load_image)
+            wgControl.configure(image=render_image)
+            wgControl.image = render_image
+            changeImg = True
+    if (imgData2 != None and not changeImg):
+        if (imgData2[2] != None):
+            if (imgData2[2]() == imgData2[3]):
+                load_image = Image.open(imgData2[0])
+                load_image = load_image.resize(imgData2[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+                render_image = ImageTk.PhotoImage(load_image)
+                wgControl.configure(image=render_image)
+                wgControl.image = render_image
+        else:
+            load_image = Image.open(imgData2[0])
+            load_image = load_image.resize(imgData2[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+            render_image = ImageTk.PhotoImage(load_image)
+            wgControl.configure(image=render_image)
+            wgControl.image = render_image
     wgControl["highlightthickness"] = borderSize
     wgControl["highlightbackground"] = borderColor
+
+    if (function != None):
+        function()
     print("MOUSE LEAVE!")   
 
-def handleEventMouseLeftClick(event, function, widget = None):
-    if (widget == None):
-        function
-    else:
-        function(widget)     
+def handleEventMouseLeftClick(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None):
+    #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
+    changeImg = False
+    if (imgData1 != None):
+        if (imgData1[2] != None):
+            if (imgData1[2]() == imgData1[3]):
+                load_image = Image.open(imgData1[0])
+                load_image = load_image.resize(imgData1[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+                render_image = ImageTk.PhotoImage(load_image)
+                wgControl.configure(image=render_image)
+                wgControl.image = render_image
+                changeImg = True
+        else:
+            load_image = Image.open(imgData1[0])
+            load_image = load_image.resize(imgData1[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+            render_image = ImageTk.PhotoImage(load_image)
+            wgControl.configure(image=render_image)
+            wgControl.image = render_image
+            changeImg = True
+    if (imgData2 != None and not changeImg):
+        if (imgData2[2] != None):
+            if (imgData2[2]() == imgData2[3]):
+                load_image = Image.open(imgData2[0])
+                load_image = load_image.resize(imgData2[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+                render_image = ImageTk.PhotoImage(load_image)
+                wgControl.configure(image=render_image)
+                wgControl.image = render_image
+        else:
+            load_image = Image.open(imgData2[0])
+            load_image = load_image.resize(imgData2[1], Image.ANTIALIAS) #Alterando as dimensões da imagem
+            render_image = ImageTk.PhotoImage(load_image)
+            wgControl.configure(image=render_image)
+            wgControl.image = render_image
+    wgControl["highlightthickness"] = borderSize
+    wgControl["highlightbackground"] = borderColor
+
+    if (function != None):
+        function()
 
 def loadCommentsByTxtFile(entryFilePath):
     filepath = askopenfilename(filetypes=(('text files', 'txt'),))
@@ -298,6 +434,28 @@ def deleteAllComments():
         widgets.destroy()
     currentCommentsUIRow = 0
     totalComments = 0
+
+def configPauseTime():
+    main.setTimeStateToStop()
+
+def configPlayTime():
+    main.setTimeStateToPlay()
+
+def handleEventPlayPauseButtonMouseLeftClick():
+    if(main.isTimeStatePlay()):
+        configPauseTime()
+    else:
+        configPlayTime()
+    
+    main.timeManagement()
+
+
+
+def updateUICurrentTime(text):
+    global etrCurrentTime
+    global root
+    printEntry(etrCurrentTime, text, aligment="center")
+    root.update()
 
 def executaUI():
     global root

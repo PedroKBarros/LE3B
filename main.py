@@ -4,11 +4,50 @@ import threading
 from collections import namedtuple, deque
 import main_constants as main_consts
 from random import randint
+import time
 
 filePath = ""
 file = None
 commentsQueue = deque()
+timeData = {"initialTime": 0.0, "currentTime": 0.0, "state": main_consts.STOP_TIME_STATE}
 
+def timeManagement():
+    global timeData
+    if (not isTimeStatePlay()):
+        return
+    time_thread = threading.Thread(target=countTime)
+    time_thread.start()
+
+def isTimeStatePlay():
+    global timeData
+    return timeData["state"]
+
+def setTimeStateToPlay():
+    global timeData
+    timeData["state"] = main_consts.PLAY_TIME_STATE
+
+def setTimeStateToStop():
+    global timeData
+    timeData["state"] = main_consts.STOP_TIME_STATE
+
+def setTimeState():
+    global timeData
+    timeData["state"] = not timeData["state"]
+
+def countTime():
+    global timeData
+    while(timeData["state"]):
+        time.sleep(1) #espera 1 segundo
+        timeData["currentTime"] += 1
+        timeDiff = timeData["currentTime"] - timeData["initialTime"]
+        ui.updateUICurrentTime(convertsecondsToUIFormat(timeDiff))
+
+def convertsecondsToUIFormat(sec):
+    conversion = time.strftime("%H:%M:%S", time.gmtime(sec))
+    print(conversion)
+    return conversion
+    
+    
 def setFilePath(path):
     global filePath
     filePath = path
