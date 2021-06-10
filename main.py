@@ -41,6 +41,10 @@ def convertStrTimeToSeconds(strTime):
     h, m, s = strTime.split(':')
     return int(h) * 3600 + int(m) * 60 + int(s)
 
+def updateTimeVelocityByUI(newVelocity):
+    global timeData
+    timeData["velocity"] = newVelocity
+
 def isTimeStatePlay():
     global timeData
     return timeData["state"]
@@ -60,8 +64,8 @@ def setTimeState():
 def countTime():
     global timeData
     while(timeData["state"] and not isEndTime()):
-        time.sleep(1) #espera 1 segundo
-        timeData["currentTime"] += timeData["velocity"]
+        time.sleep(1 / timeData["velocity"]) #espera 1 segundo
+        timeData["currentTime"] += 1
         timeDiff = timeData["currentTime"] - timeData["initialTime"]
         ui.updateUICurrentTime(convertsecondsToUIFormat(timeDiff))
         updateCurrentTimeBar()

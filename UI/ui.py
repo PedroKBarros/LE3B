@@ -165,7 +165,7 @@ def buildUI(root):
 
     defaultOptionMenuValue = StringVar()
     defaultOptionMenuValue.set(ui_consts.DEFAULT_OPTION_MENU1_VALUE)
-    optionMenu1 = OptionMenu(root, defaultOptionMenuValue, *ui_consts.OPTION_MENU1_VALUES)
+    optionMenu1 = OptionMenu(root, defaultOptionMenuValue, *ui_consts.OPTION_MENU1_VALUES, command=handleOptionMenuSelectChange)
     optionMenu1["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE1)
     optionMenu1["bg"] = ui_consts.CONTROLS_BG_COLOR
     optionMenu1["fg"] = ui_consts.SECOND_FG_COLOR
@@ -494,6 +494,9 @@ def updateUITotalTime(text):
     global root
     lblTotalTime["text"] = text
     root.update()
+
+def handleOptionMenuSelectChange(value):
+    main.updateTimeVelocityByUI(float(value.rstrip("x")))
 
 def executaUI():
     global root
