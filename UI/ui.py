@@ -13,6 +13,7 @@ totalComments = 0
 commentsFrame = None
 lblStatusBar = None
 etrCurrentTime = None
+lblTotalTime = None
 
 def buildUI(root):
     root.geometry('338x480')
@@ -114,9 +115,9 @@ def buildUI(root):
     borderColor, imgData1, imgData2))
     button2.bind("<Button-1>", lambda event, wgControl=button2, borderSize=0, 
     borderColor="white", imgData1=imgData6, imgData2=imgData7, 
-    function = handleEventPlayPauseButtonMouseLeftClick: 
+    function = handleEventPlayPauseButtonMouseLeftClick, execConditionFunc=main.isEndTime, execConditionValue=False: 
     handleEventMouseLeftClick(event, wgControl, borderSize, borderColor, 
-    imgData1, imgData2, function))
+    imgData1, imgData2, function, execConditionFunc, execConditionValue))
     button2.place(x=6, y=117)
 
     load_image4 = Image.open(ui_consts.IMAGE_PATH_TIME_BAR)
@@ -138,12 +139,13 @@ def buildUI(root):
     handleEventMouseLeave(event, wgControl, borderSize, borderColor, imgData1))
     label3.place(x=30, y=124)
 
-    label4 = Label(root)
-    label4["bg"] = ui_consts.SECOND_BG_COLOR
-    label4["text"] = ui_consts.LABEL4_INITIAL_TEXT
-    label4["fg"] = ui_consts.SECOND_FG_COLOR
-    label4["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
-    label4.place(x=173, y=118)
+    global lblTotalTime
+    lblTotalTime = Label(root)
+    lblTotalTime["bg"] = ui_consts.SECOND_BG_COLOR
+    lblTotalTime["text"] = ui_consts.LABEL4_INITIAL_TEXT
+    lblTotalTime["fg"] = ui_consts.SECOND_FG_COLOR
+    lblTotalTime["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE3)
+    lblTotalTime.place(x=173, y=118)
 
     global etrCurrentTime
     etrCurrentTime = Entry(root)
@@ -221,8 +223,12 @@ def onFrameConfigure(canvas):
     '''Reset the scroll region to encompass the inner frame'''
     canvas.configure(scrollregion=canvas.bbox("all"))
 
-def handleEventMouseEnter(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None):
+def handleEventMouseEnter(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None, execConditionFunc = None, execConditionValue = None):
     #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
+    if (execConditionFunc != None or execConditionValue != None):
+        if (execConditionFunc() != execConditionValue):
+            return
+
     changeImg = False
     if (imgData1 != None):
         if (imgData1[2] != None):
@@ -262,8 +268,12 @@ def handleEventMouseEnter(event, wgControl, borderSize = 1, borderColor = "black
 
     print("MOUSE ENTER!")
 
-def handleEventMouseLeave(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None):
+def handleEventMouseLeave(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None, execConditionFunc = None, execConditionValue = None):
     #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
+    if (execConditionFunc != None or execConditionValue != None):
+        if (execConditionFunc() != execConditionValue):
+            return
+
     changeImg = False
     if (imgData1 != None):
         if (imgData1[2] != None):
@@ -300,10 +310,14 @@ def handleEventMouseLeave(event, wgControl, borderSize = 1, borderColor = "black
 
     if (function != None):
         function()
-    print("MOUSE LEAVE!")   
+    print("MOUSE LEAVE!")
 
-def handleEventMouseLeftClick(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None):
+def handleEventMouseLeftClick(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, function = None, execConditionFunc = None, execConditionValue = None):
     #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
+    if (execConditionFunc != None or execConditionValue != None):
+        if (execConditionFunc() != execConditionValue):
+            return
+
     changeImg = False
     if (imgData1 != None):
         if (imgData1[2] != None):
@@ -456,6 +470,12 @@ def updateUICurrentTime(text):
     global etrCurrentTime
     global root
     printEntry(etrCurrentTime, text, aligment="center")
+    root.update()
+
+def updateUITotalTime(text):
+    global lblTotalTime
+    global root
+    lblTotalTime["text"] = text
     root.update()
 
 def executaUI():

@@ -1,7 +1,7 @@
 import UI.ui_constants as ui_consts
 import UI.ui as ui
 import threading
-from collections import namedtuple, deque
+from collections import deque
 import main_constants as main_consts
 from random import randint
 import time
@@ -9,14 +9,29 @@ import time
 filePath = ""
 file = None
 commentsQueue = deque()
-timeData = {"initialTime": 0.0, "currentTime": 0.0, "state": main_consts.STOP_TIME_STATE}
+timeData = {"initialTime": 0.0, "currentTime": 0.0, "totalTime": 0.0, "velocity": 1, "state": main_consts.STOP_TIME_STATE}
 
 def timeManagement():
     global timeData
-    if (not isTimeStatePlay()):
+
+    updateTotalTime()
+    if (not isTimeStatePlay() or isEndTime()):
         return
     time_thread = threading.Thread(target=countTime)
     time_thread.start()
+
+def updateTotalTime():
+    #Atenção: essa função é chamada ao final da função 
+    # que carrega os comentários na fila e na ui
+    global timeData
+    global commentsQueue
+    strTotalTime = commentsQueue[len(commentsQueue) - 1]["time"]
+    timeData["totalTime"] = convertStrTimeToSeconds(strTotalTime)
+    ui.updateUITotalTime(strTotalTime)
+
+def convertStrTimeToSeconds(strTime):
+    h, m, s = strTime.split(':')
+    return int(h) * 3600 + int(m) * 60 + int(s)
 
 def isTimeStatePlay():
     global timeData
@@ -36,11 +51,18 @@ def setTimeState():
 
 def countTime():
     global timeData
-    while(timeData["state"]):
+    while(timeData["state"] and not isEndTime()):
         time.sleep(1) #espera 1 segundo
-        timeData["currentTime"] += 1
+        timeData["currentTime"] += timeData["velocity"]
         timeDiff = timeData["currentTime"] - timeData["initialTime"]
         ui.updateUICurrentTime(convertsecondsToUIFormat(timeDiff))
+    
+    if (isEndTime()):
+        ui.handleEventPlayPauseButtonMouseLeftClick()
+
+def isEndTime():
+    global timeData
+    return timeData["currentTime"] == timeData["totalTime"]
 
 def convertsecondsToUIFormat(sec):
     conversion = time.strftime("%H:%M:%S", time.gmtime(sec))
@@ -121,6 +143,7 @@ def loadComments():
         line = file.readline()
     
     ui.updateStatusBar(str(ui.totalComments) + main_consts.STATUS_BAR_LOADED_COMMENTS_TEXT)
+    timeManagement()
 
 def isAbbreviatedAuthorNameLine(linha):
     return len(linha.rstrip("\n")) == 2
