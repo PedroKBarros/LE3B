@@ -166,12 +166,13 @@ def buildUI(root):
     optionMenu1["font"] = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE4)
     optionMenu1["bg"] = ui_consts.CONTROLS_BG_COLOR
     optionMenu1["fg"] = ui_consts.SECOND_FG_COLOR
+    optionMenu1["bd"] = 1
     optionMenu1["direction"] = "above"
     optionMenu1["highlightthickness"] = 0
     optionMenu1["relief"] = GROOVE
     optionMenu1["width"] = 4
     optionMenu1["height"] = 1
-    optionMenu1.place(x=242, y=114)
+    optionMenu1.place(x=242, y=116)
 
     load_image5 = Image.open(ui_consts.IMAGE_PATH_CURRENT_TIME_BAR)
     load_image5 = load_image5.resize((20, 4), Image.ANTIALIAS) #Alterando as dimensões da imagem
