@@ -77,6 +77,14 @@ def countTime():
         ui.handleEventPlayPauseButtonMouseLeftClick()
         ui.updateUICurrentTimeBar(ui_consts.IMAGE_PATH_TIME_BAR_SIZE_MAX[0])
 
+def setCurrentTime(newCurrentTime):
+    global timeData
+    if (newCurrentTime > timeData["totalTime"] or newCurrentTime < 0):
+        return
+
+    timeData["currentTime"] = newCurrentTime
+    
+
 def isEndTime():
     global timeData
     return timeData["currentTime"] == timeData["totalTime"]

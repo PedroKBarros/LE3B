@@ -441,6 +441,8 @@ def validateCurrentTime():
 
     etrCurrentTime["fg"] = "white"
     updateStatusBar("")
+
+    main.setCurrentTime(main.convertStrTimeToSeconds(etrCurrentTime.get()))
     return True  
 
 def validateTotalNumberSeparatorsCurrentTime():
