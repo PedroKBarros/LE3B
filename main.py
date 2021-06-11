@@ -25,6 +25,9 @@ def updateTotalTime():
     # que carrega os comentários na fila e na ui
     global timeData
     global commentsQueue
+    if (len(commentsQueue) == 0):
+        ui.updateUITotalTime(ui_consts.LABEL4_INITIAL_TEXT)
+        return
     strTotalTime = commentsQueue[len(commentsQueue) - 1]["time"]
     timeData["totalTime"] = convertStrTimeToSeconds(strTotalTime)
     ui.updateUITotalTime(" / " + strTotalTime)
@@ -82,7 +85,6 @@ def convertsecondsToUIFormat(sec):
     conversion = time.strftime("%H:%M:%S", time.gmtime(sec))
     print(conversion)
     return conversion
-    
     
 def setFilePath(path):
     global filePath

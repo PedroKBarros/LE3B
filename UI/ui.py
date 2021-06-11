@@ -119,7 +119,7 @@ def buildUI(root):
     borderColor="white", imgData1=imgData6, imgData2=imgData7, 
     function = handleEventPlayPauseButtonMouseLeftClick, execConditionFunc=main.isEndTime, execConditionValue=False: 
     handleEventMouseLeftClick(event, wgControl, borderSize, borderColor, 
-    imgData1, imgData2, function, execConditionFunc, execConditionValue))
+    imgData1, imgData2, function(wgControl), execConditionFunc, execConditionValue))
     button2.place(x=7, y=117)
 
     load_image4 = Image.open(ui_consts.IMAGE_PATH_TIME_BAR)
@@ -165,8 +165,17 @@ def buildUI(root):
     handleEventMouseEnter(event, wgControl, borderSize, borderColor))
     etrCurrentTime.bind("<Leave>", lambda event, wgControl=etrCurrentTime, borderSize=0: 
     handleEventMouseLeave(event, wgControl, borderSize))
-    etrCurrentTime.bind("<FocusIn>", lambda event, wgControl=etrCurrentTime, borderSize=0: 
-    handleEventFocusIn(event, wgControl, borderSize))
+    imgData1 = (ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE, (22, 22), main.isTimeStatePlay, True)
+    etrCurrentTime.bind("<FocusIn>", lambda event, wgControl=button2, borderSize=0, 
+    borderColor="white", imgData1=imgData1: 
+    handleEventFocusIn(event, wgControl, borderSize, borderColor, imgData1, None, 
+    function=configPauseTime)) 
+    #Obs1.: Utilizei configPauseTime() ao invés de handleEventButtonPlayPauseLeftClick(), 
+    # pois essa última passa o foco para o botão play pause, retirando o foco da etrCurrentTime. 
+    # Além disso, ela chama a main.timeManagement(), o que não é necessáriod
+    #Obs2.: É necessário o evento FocusIn, apesar de termos o trace com a StringVar, pois a
+    # handleEventFocusIn seta a variável lastWidgetFocusIn com o widget 
+    # que pertence ao evento.
     etrCurrentTime.place(x=72, y=119)
     printEntry(etrCurrentTime, "00:00:00", CENTER)
 
@@ -235,6 +244,7 @@ function = None, execConditionFunc = None, execConditionValue = None):
     global lastWidgetFocusIn
     lastWidgetFocusIn = str(event.widget)
     handleEvent(event, wgControl, borderSize, borderColor, imgData1, imgData2, function, execConditionFunc, execConditionValue)
+    print("FOCUS IN!")
 
 def handleEventFocusOut(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, 
 function = None, execConditionFunc = None, execConditionValue = None):
@@ -244,7 +254,7 @@ function = None, execConditionFunc = None, execConditionValue = None):
 def handleEvent(event, wgControl, borderSize = 1, borderColor = "black", imgData1 = None, imgData2 = None, 
 function = None, execConditionFunc = None, execConditionValue = None):
     #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
-    if (execConditionFunc != None or execConditionValue != None):
+    if (execConditionFunc != None and execConditionValue != None):
         if (execConditionFunc() != execConditionValue):
             return
 
@@ -296,6 +306,7 @@ def handleEventMouseLeftClick(event, wgControl, borderSize = 1, borderColor = "b
 function = None, execConditionFunc = None, execConditionValue = None):
     #Estrutura de uma imgData: (caminho da imagem, (width, height), função condição, valor condição)
     handleEvent(event, wgControl, borderSize, borderColor, imgData1, imgData2, function, execConditionFunc, execConditionValue)
+    print("CLIQUE")
 
 def loadCommentsByTxtFile(entryFilePath):
     filepath = askopenfilename(filetypes=(('text files', 'txt'),))
@@ -377,10 +388,12 @@ def addComment(comment):
     totalComments += 1
 
 
-def updateStatusBar(text):
+def updateStatusBar(text, backGroundColor = ui_consts.CONTROLS_BG_COLOR, fontColor = ui_consts.SECOND_FG_COLOR):
     global lblStatusBar
     global root
     lblStatusBar["text"] = text
+    lblStatusBar["bg"] = backGroundColor
+    lblStatusBar["fg"] = fontColor
     root.update() #Para atualizar qualquer mudança visual na barra de status
     
 def deleteAllComments():
@@ -398,13 +411,59 @@ def configPauseTime():
 def configPlayTime():
     main.setTimeStateToPlay()
 
-def handleEventPlayPauseButtonMouseLeftClick():
+def handleEventPlayPauseButtonMouseLeftClick(buttonPlayPause):
+    global root
+    focusOnPlayPauseButton(buttonPlayPause) #Para retirar o foco do etrCurrentTime, caso o usuário tenha clicado nele
+    if(not validateCurrentTime()):
+        return #Valida o valor que está em etrCurrentTime, caso o usuário tenha alterado
     if(main.isTimeStatePlay()):
         configPauseTime()
     else:
         configPlayTime()
     
     main.timeManagement()
+
+def validateCurrentTime():
+    global etrCurrentTime
+    if (not isEtrCurrentTimeLastWidgetFocusIn()):
+        etrCurrentTime["fg"] = "white"
+        updateStatusBar("")
+        return True
+    
+    isvalidNumberSeparators = validateTotalNumberSeparatorsCurrentTime()
+    if(not isvalidNumberSeparators):
+        etrCurrentTime["fg"] = "red"
+        updateStatusBar(ui_consts.ETR_CURRENT_TIME_WARNING_TEXT_MSG, "red")
+        #showWarningMsgBox(ui_consts.ETR_CURRENT_TIME_WARNING_TITLE_MSG, ui_consts.ETR_CURRENT_TIME_WARNING_TEXT_MSG)
+        return False #Não dá para colocar os dois valores booleanos em um if só, pois ter um número de separadores inválido gera bug na validação seguinte
+    isvalidNumbers = validateNumbersCurrentTime()
+    if (not isvalidNumbers):
+        etrCurrentTime["fg"] = "red"
+        updateStatusBar(ui_consts.ETR_CURRENT_TIME_WARNING_TEXT_MSG, "red")
+        return False        
+        #showWarningMsgBox(ui_consts.ETR_CURRENT_TIME_WARNING_TITLE_MSG, ui_consts.ETR_CURRENT_TIME_WARNING_TEXT_MSG)  
+
+    etrCurrentTime["fg"] = "white"
+    updateStatusBar("")
+    return True  
+
+def validateTotalNumberSeparatorsCurrentTime():
+    global etrCurrentTime
+    return etrCurrentTime.get().count(ui_consts.ETR_CURRENT_TIME_SEPARATOR) == 2
+
+def validateNumbersCurrentTime():
+    global etrCurrentTime
+    h, m, s = etrCurrentTime.get().split(':')
+    if (not h.isnumeric() or not m.isnumeric() or not s.isnumeric()):
+        return False
+
+    strTotalTime = main.convertsecondsToUIFormat(main.timeData["totalTime"])
+    hMax, mMax, sMax = strTotalTime.split(':')
+
+    return  int(h) <= int(hMax) and int(m) <= int(mMax) and int(s) <= int(sMax)
+
+def focusOnPlayPauseButton(buttonPlayPause):
+    buttonPlayPause.focus_set()
 
 def updateUICurrentTime(text):
     global etrCurrentTime
@@ -439,6 +498,7 @@ def handleOptionMenuSelectChange(value):
     main.updateTimeVelocityByUI(float(value.rstrip("x")))
 
 def handleEtrCurrentTimeChange(var):
+    global etrCurrentTime
     if (not isEtrCurrentTimeLastWidgetFocusIn()):
         return
 
@@ -450,6 +510,13 @@ def handleEtrCurrentTimeChange(var):
     lastCharInput = content[len(content) - 1]
     if (not isCharAsciiNumber(lastCharInput)):
         var.set(content[0:len(content) - 1])
+    if(len(content) > 8):
+        var.set(content[0:len(content) - 1])
+
+    if (len(content) == 2 or len(content) == 5):
+        etrCurrentTime.insert(END, ":")
+        
+
 
 def isCharAsciiNumber(char):
     return ord(char) >= 48 and ord(char) <= 57
