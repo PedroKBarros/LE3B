@@ -3,7 +3,6 @@ import UI.ui as ui
 import threading
 from collections import deque
 import main_constants as main_consts
-from random import randint
 import time
 
 filePath = ""
@@ -149,14 +148,9 @@ def loadComments():
 
             currentNumChars += len(text)
             text = text.rstrip("\n")
-            comment2 = searchCommentByAuthorName(authorName)
-            if (comment2 == None):
-                colorAbbreviated = main_consts.COLORS_ABBREVIATED_AUTHOR_NAME[randint(0, 10)]
-            else:
-                #Para manter a mesma cor do(s) comentário(s) anterior(s) do mesmo autor
-                colorAbbreviated = comment2["colorAbbreviated"]
+           
             comment = {"abbreviatedAuthorName": abbreviatedAuthorName, 
-            "colorAbbreviated": colorAbbreviated, "authorName": authorName, "time": time, 
+            "authorName": authorName, "time": time, 
             "text": text, "state": ""}
             setCommentState(comment, 0)
             commentsQueue.append(comment)

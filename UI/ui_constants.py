@@ -5,6 +5,9 @@ FONT_SIZE1 = "10"
 FONT_SIZE2 = "11"
 FONT_SIZE3 = "7"
 FONT_SIZE4 = "8"
+COLORS_ABBREVIATED_AUTHOR_NAME = ("#1565C0", "#6A1B9A", "#1A237E", "#311B92", "#4527A0", 
+                                  "#5E35B1", "#4A148C", "#01579B", "#3949AB", "#7B1FA2", 
+                                  "#283593")
 DEFAULT_FG_COLOR = "#4E5A66"
 SECOND_FG_COLOR = "#FFFFFF"
 COMMENT_FG_COLOR_LOADED_STATE = "#838b95"

@@ -6,6 +6,8 @@ import UI.ui_constants as ui_consts
 import main as main
 import os.path
 from os import path
+from collections import deque
+from random import randint
 
 root = None
 currentCommentsUIRow = 0
@@ -15,6 +17,7 @@ etrCurrentTime = None
 lblTotalTime = None
 lblCurrentTimeBar = None
 lastWidgetFocusIn = None
+UICommentsQueue = deque()
 
 def buildUI(root):
     root.geometry('338x500')
@@ -361,7 +364,10 @@ def runMsgBoxCallback(msgBoxReturn, callbackFunction, callbackCondition):
 def addComment(comment):
     global currentCommentsUIRow
     global commentsFrame
+    global UICommentsQueue
 
+    colorAbbreviated = defineBackgroundColorAbbreviatedNameComment(comment) #Define a cor de fundo do widget com o nome do autor do comentário abreviado
+    
     message1 = Message(commentsFrame, width = 16, font=('Verdana', 8, 'normal'), bg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, fg="#FFFFFF", bd=0)
     message1["text"] = comment["abbreviatedAuthorName"]
     message1.grid(row=currentCommentsUIRow, column=0)
@@ -385,6 +391,28 @@ def addComment(comment):
     currentCommentsUIRow += 1
 
     main.setCommentState(comment, 1)
+    UIComment = {"wgAbbreviatedAuthorName": message1, 
+    "colorAbbreviated": colorAbbreviated, 
+    "wgAuthorName": message2, "wgTime": message3,
+     "wgText": message4}
+    UICommentsQueue.append(UIComment)
+
+def defineBackgroundColorAbbreviatedNameComment(comment):
+    comment2 = searchUICommentByAuthorName(comment["authorName"])
+    if(comment2 == None):
+        colorAbbreviated = ui_consts.COLORS_ABBREVIATED_AUTHOR_NAME[randint(0, 10)]
+    else:
+        colorAbbreviated = comment2["colorAbbreviated"]
+
+    return colorAbbreviated
+
+def searchUICommentByAuthorName(authorName):
+    global UICommentsQueue
+    for i in range(len(UICommentsQueue)):
+        UIComment = UICommentsQueue[i]
+        if (UIComment["wgAuthorName"]["text"] == authorName):
+            return UIComment
+    return None
 
 def updateStatusBar(text, backGroundColor = ui_consts.CONTROLS_BG_COLOR, fontColor = ui_consts.SECOND_FG_COLOR):
     global lblStatusBar
