@@ -510,6 +510,7 @@ def updateUICurrentTime(text):
 
 def updateUICurrentTimeBar(width):
     global lblCurrentTimeBar
+    global root
 
     if (width == 0):
         lblCurrentTimeBar.place_forget() #Para torna não visível o widget
@@ -520,10 +521,12 @@ def updateUICurrentTimeBar(width):
     load_image = load_image.resize((width, lblCurrentTimeBar.image.height()), Image.ANTIALIAS)
     render_image = ImageTk.PhotoImage(load_image)
 
-    lblCurrentTimeBar = Label(root, image=render_image)
+    #lblCurrentTimeBar.configure(image="") #Deletando imagem anterior
+    lblCurrentTimeBar.configure(image=render_image)
     lblCurrentTimeBar.image = render_image
     lblCurrentTimeBar["bd"] = 0
     lblCurrentTimeBar["highlightthickness"] = 0
+    root.update()
 
 def updateUITotalTime(text):
     global lblTotalTime
