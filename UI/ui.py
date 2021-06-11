@@ -9,7 +9,6 @@ from os import path
 
 root = None
 currentCommentsUIRow = 0
-totalComments = 0
 commentsFrame = None
 lblStatusBar = None
 etrCurrentTime = None
@@ -362,7 +361,6 @@ def runMsgBoxCallback(msgBoxReturn, callbackFunction, callbackCondition):
 def addComment(comment):
     global currentCommentsUIRow
     global commentsFrame
-    global totalComments
 
     message1 = Message(commentsFrame, width = 16, font=('Verdana', 8, 'normal'), bg=comment["colorAbbreviated"], fg="#FFFFFF", bd=0)
     message1["text"] = comment["abbreviatedAuthorName"]
@@ -385,8 +383,6 @@ def addComment(comment):
     message4["padx"] = 10
 
     currentCommentsUIRow += 1
-    totalComments += 1
-
 
 def updateStatusBar(text, backGroundColor = ui_consts.CONTROLS_BG_COLOR, fontColor = ui_consts.SECOND_FG_COLOR):
     global lblStatusBar
@@ -398,12 +394,10 @@ def updateStatusBar(text, backGroundColor = ui_consts.CONTROLS_BG_COLOR, fontCol
     
 def deleteAllComments():
     global currentCommentsUIRow
-    global totalComments
     global commentsFrame
     for widgets in commentsFrame.winfo_children():
         widgets.destroy()
     currentCommentsUIRow = 0
-    totalComments = 0
 
 def configPauseTime():
     main.setTimeStateToStop()

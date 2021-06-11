@@ -158,7 +158,7 @@ def loadComments():
         lineNum += 1
         line = file.readline()
     
-    ui.updateStatusBar(str(ui.totalComments) + main_consts.STATUS_BAR_LOADED_COMMENTS_TEXT)
+    ui.updateStatusBar(str(len(commentsQueue)) + main_consts.STATUS_BAR_LOADED_COMMENTS_TEXT)
     timeManagement()
 
 def isAbbreviatedAuthorNameLine(linha):
