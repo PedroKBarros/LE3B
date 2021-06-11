@@ -370,25 +370,23 @@ def addComment(comment):
 
     colorAbbreviated = defineBackgroundColorAbbreviatedNameComment(comment) #Define a cor de fundo do widget com o nome do autor do comentário abreviado
     
-    message1 = Message(commentsFrame, width = 16, font=('Verdana', 8, 'normal'), bg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, fg="#FFFFFF", bd=0)
+    message1 = Message(commentsFrame)
     message1["text"] = comment["abbreviatedAuthorName"]
     message1.grid(row=currentCommentsUIRow, column=0)
 
-    message2 = Message(commentsFrame, font=('Verdana', 10, 'bold'), bg="#FFFFFF", fg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, bd=0, width=200)
+    message2 = Message(commentsFrame)
     message2["text"] = comment["authorName"]
     message2.grid(row=currentCommentsUIRow, column=1)
-    message2["padx"] = 10
 
-    message3 = Message(commentsFrame, font=('Verdana', 8, 'normal'), bg="#FFFFFF", fg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, bd=0, width=100)
+    message3 = Message(commentsFrame)
     message3["text"] = comment["time"]
     message3.grid(row=currentCommentsUIRow, column=2)
 
     currentCommentsUIRow += 1
     
-    message4 = Message(commentsFrame, font=('Verdana', 10, 'normal'), bg="#FFFFFF", fg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, bd=0, width=200)
+    message4 = Message(commentsFrame)
     message4["text"] = comment["text"]
     message4.grid(row=currentCommentsUIRow, column=1)
-    message4["padx"] = 10
 
     currentCommentsUIRow += 1
 
@@ -398,6 +396,7 @@ def addComment(comment):
     "wgAuthorName": message2, "wgTime": message3,
      "wgText": message4}
     UICommentsQueue.append(UIComment)
+    formatCommentForLoaded(len(UICommentsQueue) - 1)
 
 def defineBackgroundColorAbbreviatedNameComment(comment):
     comment2 = searchUICommentByAuthorName(comment["authorName"])
@@ -416,13 +415,25 @@ def searchUICommentByAuthorName(authorName):
             return UIComment
     return None
 
-def formatCommentForReading(index):
+def formatCommentForRead(index):
     global UICommentsQueue
     UIComment = UICommentsQueue[index]
     UIComment["wgAbbreviatedAuthorName"]["bg"] = UIComment["colorAbbreviated"]
     UIComment["wgAuthorName"]["fg"] = ui_consts.THRID_FG_COLOR
     UIComment["wgTime"]["fg"] = ui_consts.TIME_COMMENT_FG_COLOR_READ_STATE
-    UIComment["wgText"]["fg"] = ui_consts.THRID_FG_COLOR   
+    UIComment["wgText"]["fg"] = ui_consts.THRID_FG_COLOR
+
+def formatCommentForLoaded(index):
+    global UICommentsQueue
+    UIComment = UICommentsQueue[index]
+    UIComment["wgAbbreviatedAuthorName"].configure(width = 16, font=('Verdana', 8, 'normal'), 
+    bg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, fg="#FFFFFF", bd=0)
+    UIComment["wgAuthorName"].configure(font=('Verdana', 10, 'bold'), bg="#FFFFFF", 
+    fg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, bd=0, width=200, padx=10)
+    UIComment["wgTime"].configure(font=('Verdana', 8, 'normal'), bg="#FFFFFF", 
+    fg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, bd=0, width=100)
+    UIComment["wgText"].configure(font=('Verdana', 10, 'normal'), bg="#FFFFFF",
+    fg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, bd=0, width=200, padx=10)    
 
 def updateStatusBar(text, backGroundColor = ui_consts.CONTROLS_BG_COLOR, fontColor = ui_consts.SECOND_FG_COLOR):
     global lblStatusBar
@@ -482,6 +493,7 @@ def validateCurrentTime():
     updateStatusBar("")
 
     main.setCurrentTime(main.convertStrTimeToSeconds(etrCurrentTime.get()))
+    main.checkCommentsToChangeStateByCurrentTimeUserInput()
     return True  
 
 def validateTotalNumberSeparatorsCurrentTime():

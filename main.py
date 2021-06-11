@@ -79,6 +79,70 @@ def countTime():
         ui.handleEventPlayPauseButtonMouseLeftClick()
         ui.updateUICurrentTimeBar(ui_consts.IMAGE_PATH_TIME_BAR_SIZE_MAX[0])
 
+def checkCommentsToChangeStateByCurrentTimeUserInput():
+    #Essa função só é chamada após a ui validar o novo currentTime e atualizar o currentTime do timeData
+    global timeData
+    global commentsQueue
+    global commentsQueueData
+
+    if (isTimeLastCommentReadMoreThanCurrentTime()):
+        putCommentsReadToLoadedByCurrentTime()
+        #Nesse caso, há pelo menos um comentário que deve ter seu estado alterado de read para loaded_state
+    
+    if (isTimeLastCommentReadLessThanCurrentTime()):
+        putCommentsLoadedToReadByCurrentTime()
+        #Nesse caso, há ou não pelo menos um comentário que deve ter seu estado alterado de loaded para read
+
+def putCommentsReadToLoadedByCurrentTime():
+    global timeData
+    global commentsQueue
+    global commentsQueueData
+    lastIndex = commentsQueueData["indexLastCommentRead"]
+    currentTime = timeData["currentTime"]
+
+    for i in range(lastIndex, -1, -1): #[lastIndex, -1[
+        comment = commentsQueue[i]
+        time = convertStrTimeToSeconds(comment["time"])
+        if (time > currentTime):
+            setCommentState(comment, 1)
+            ui.formatCommentForLoaded(i)
+            commentsQueueData["indexLastCommentRead"] = i - 1
+        else:
+            break #Se não é maior, é pq nenhum outro comentário anterior será
+
+def putCommentsLoadedToReadByCurrentTime():
+    global timeData
+    global commentsQueue
+    global commentsQueueData
+    lastIndex = commentsQueueData["indexLastCommentRead"]
+    currentTime = timeData["currentTime"]
+
+    for i in range(lastIndex + 1, len(commentsQueue)): #[lastIndex + 1, len()[
+        comment = commentsQueue[i]
+        time = convertStrTimeToSeconds(comment["time"])
+        if (time <= currentTime):
+            setCommentState(comment, 2)
+            ui.formatCommentForRead(i)
+            commentsQueueData["indexLastCommentRead"] = i
+        else:
+            break #Se não é menor ou igual, é pq nenhum outro comentário seguinte será       
+
+def isTimeLastCommentReadLessThanCurrentTime():
+    global timeData
+    global commentsQueue
+    global commentsQueueData
+    lastCommentRead = commentsQueue[commentsQueueData["indexLastCommentRead"]]
+    lastTimeSecs = convertStrTimeToSeconds(lastCommentRead["time"])
+    return lastTimeSecs < timeData["currentTime"]
+
+def isTimeLastCommentReadMoreThanCurrentTime():
+    global timeData
+    global commentsQueue
+    global commentsQueueData
+    lastCommentRead = commentsQueue[commentsQueueData["indexLastCommentRead"]]
+    lastTimeSecs = convertStrTimeToSeconds(lastCommentRead["time"])
+    return lastTimeSecs > timeData["currentTime"]
+
 def checkNextCommentToRead():
     global commentsQueue
     global commentsQueueData
@@ -90,7 +154,7 @@ def checkNextCommentToRead():
     timeNextComment = convertStrTimeToSeconds(nextComment["time"])
     if (timeNextComment != timeData["currentTime"]):
         return
-    ui.formatCommentForReading(index)
+    ui.formatCommentForRead(index)
     setCommentState(nextComment, 2)
     commentsQueueData["indexLastCommentRead"] = index
 
