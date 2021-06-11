@@ -362,27 +362,29 @@ def addComment(comment):
     global currentCommentsUIRow
     global commentsFrame
 
-    message1 = Message(commentsFrame, width = 16, font=('Verdana', 8, 'normal'), bg=comment["colorAbbreviated"], fg="#FFFFFF", bd=0)
+    message1 = Message(commentsFrame, width = 16, font=('Verdana', 8, 'normal'), bg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, fg="#FFFFFF", bd=0)
     message1["text"] = comment["abbreviatedAuthorName"]
     message1.grid(row=currentCommentsUIRow, column=0)
 
-    message2 = Message(commentsFrame, font=('Verdana', 10, 'bold'), bg="#FFFFFF", fg="#000000", bd=0, width=200)
+    message2 = Message(commentsFrame, font=('Verdana', 10, 'bold'), bg="#FFFFFF", fg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, bd=0, width=200)
     message2["text"] = comment["authorName"]
     message2.grid(row=currentCommentsUIRow, column=1)
     message2["padx"] = 10
 
-    message3 = Message(commentsFrame, font=('Verdana', 8, 'normal'), bg="#FFFFFF", fg="#808080", bd=0, width=100)
+    message3 = Message(commentsFrame, font=('Verdana', 8, 'normal'), bg="#FFFFFF", fg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, bd=0, width=100)
     message3["text"] = comment["time"]
     message3.grid(row=currentCommentsUIRow, column=2)
 
     currentCommentsUIRow += 1
     
-    message4 = Message(commentsFrame, font=('Verdana', 10, 'normal'), bg="#FFFFFF", fg="#000000", bd=0, width=200)
+    message4 = Message(commentsFrame, font=('Verdana', 10, 'normal'), bg="#FFFFFF", fg=ui_consts.COMMENT_FG_COLOR_LOADED_STATE, bd=0, width=200)
     message4["text"] = comment["text"]
     message4.grid(row=currentCommentsUIRow, column=1)
     message4["padx"] = 10
 
     currentCommentsUIRow += 1
+
+    main.setCommentState(comment, 1)
 
 def updateStatusBar(text, backGroundColor = ui_consts.CONTROLS_BG_COLOR, fontColor = ui_consts.SECOND_FG_COLOR):
     global lblStatusBar

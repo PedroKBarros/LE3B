@@ -149,7 +149,8 @@ def loadComments():
                 colorAbbreviated = comment2["colorAbbreviated"]
             comment = {"abbreviatedAuthorName": abbreviatedAuthorName, 
             "colorAbbreviated": colorAbbreviated, "authorName": authorName, "time": time, 
-            "text": text, "state": main_consts.COMMENT_STATES[0]}
+            "text": text, "state": ""}
+            setCommentState(comment, 0)
             commentsQueue.append(comment)
             ui.addComment(comment)
             lineNum = -1
@@ -160,6 +161,11 @@ def loadComments():
     
     ui.updateStatusBar(str(len(commentsQueue)) + main_consts.STATUS_BAR_LOADED_COMMENTS_TEXT)
     timeManagement()
+
+def setCommentState(comment, numState):
+    if (numState < 0 or numState > 3):
+        return
+    comment["state"] = main_consts.COMMENT_STATES[numState]
 
 def isAbbreviatedAuthorNameLine(linha):
     return len(linha.rstrip("\n")) == 2
