@@ -492,12 +492,14 @@ def validateNumbersCurrentTime():
     global etrCurrentTime
     h, m, s = etrCurrentTime.get().split(':')
     if (not h.isnumeric() or not m.isnumeric() or not s.isnumeric()):
+        #A função isnumeric() retorna False se a string for vazia
         return False
 
-    strTotalTime = main.convertsecondsToUIFormat(main.timeData["totalTime"])
-    hMax, mMax, sMax = strTotalTime.split(':')
+    totalTime = main.timeData["totalTime"]
+    strCurrentTime = h + ":" + m + ":" + s
+    currentTime = main.convertStrTimeToSeconds(strCurrentTime)
 
-    return  int(h) <= int(hMax) and int(m) <= int(mMax) and int(s) <= int(sMax)
+    return  currentTime <= totalTime
 
 def focusOnPlayPauseButton(buttonPlayPause):
     buttonPlayPause.focus_set()
