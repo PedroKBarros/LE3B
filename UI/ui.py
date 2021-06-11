@@ -17,6 +17,7 @@ etrCurrentTime = None
 lblTotalTime = None
 lblCurrentTimeBar = None
 lastWidgetFocusIn = None
+btnPlayPause = None
 UICommentsQueue = deque()
 
 def buildUI(root):
@@ -99,10 +100,11 @@ def buildUI(root):
     load_image3 = load_image3.resize((22, 22), Image.ANTIALIAS) #Alterando as dimensões da imagem
     render_image3 = ImageTk.PhotoImage(load_image3)
 
-    button2 = Button(root, image=render_image3)
-    button2.image = render_image3
-    button2["bd"] = 0 #Para definir a borda, tornando-a mínima
-    button2["highlightthickness"] = 0 #Para definir a espessura de destaque, retirando de fato a borda
+    global btnPlayPause
+    btnPlayPause = Button(root, image=render_image3)
+    btnPlayPause.image = render_image3
+    btnPlayPause["bd"] = 0 #Para definir a borda, tornando-a mínima
+    btnPlayPause["highlightthickness"] = 0 #Para definir a espessura de destaque, retirando de fato a borda
     #Mouse Leave e Enter:
     imgData1 = (ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, (22, 22), main.isTimeStatePlay, False)
     imgData2 = (ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE, (22, 22), main.isTimeStatePlay, False)
@@ -111,18 +113,18 @@ def buildUI(root):
     #Button-1:
     imgData6 = (ui_consts.IMAGE_PATH_BTN_PAUSE_ENTER, (22, 22), main.isTimeStatePlay, False)
     imgData7 = (ui_consts.IMAGE_PATH_BTN_PLAY_ENTER, (22, 22), main.isTimeStatePlay, True)
-    button2.bind("<Enter>", lambda event, wgControl=button2, borderSize=0, borderColor="white", 
+    btnPlayPause.bind("<Enter>", lambda event, wgControl=btnPlayPause, borderSize=0, borderColor="white", 
     imgData1=imgData1, imgData2=imgData3: handleEventMouseEnter(event, wgControl, borderSize, 
     borderColor, imgData1, imgData2))
-    button2.bind("<Leave>", lambda event, wgControl=button2, borderSize=0, borderColor="white", 
+    btnPlayPause.bind("<Leave>", lambda event, wgControl=btnPlayPause, borderSize=0, borderColor="white", 
     imgData1=imgData2, imgData2=imgData4: handleEventMouseLeave(event, wgControl, borderSize, 
     borderColor, imgData1, imgData2))
-    button2.bind("<Button-1>", lambda event, wgControl=button2, borderSize=0, 
+    btnPlayPause.bind("<Button-1>", lambda event, wgControl=btnPlayPause, borderSize=0, 
     borderColor="white", imgData1=imgData6, imgData2=imgData7, 
     function = handleEventPlayPauseButtonMouseLeftClick, execConditionFunc=main.isEndTime, execConditionValue=False: 
     handleEventMouseLeftClick(event, wgControl, borderSize, borderColor, 
-    imgData1, imgData2, function(wgControl), execConditionFunc, execConditionValue))
-    button2.place(x=7, y=117)
+    imgData1, imgData2, function, execConditionFunc, execConditionValue))
+    btnPlayPause.place(x=7, y=117)
 
     load_image4 = Image.open(ui_consts.IMAGE_PATH_TIME_BAR)
     load_image4 = load_image4.resize(ui_consts.IMAGE_PATH_TIME_BAR_SIZE_MIN, Image.ANTIALIAS) #Alterando as dimensões da imagem
@@ -168,7 +170,7 @@ def buildUI(root):
     etrCurrentTime.bind("<Leave>", lambda event, wgControl=etrCurrentTime, borderSize=0: 
     handleEventMouseLeave(event, wgControl, borderSize))
     imgData1 = (ui_consts.IMAGE_PATH_BTN_PLAY_LEAVE, (22, 22), main.isTimeStatePlay, True)
-    etrCurrentTime.bind("<FocusIn>", lambda event, wgControl=button2, borderSize=0, 
+    etrCurrentTime.bind("<FocusIn>", lambda event, wgControl=btnPlayPause, borderSize=0, 
     borderColor="white", imgData1=imgData1: 
     handleEventFocusIn(event, wgControl, borderSize, borderColor, imgData1, None, 
     function=configPauseTime)) 
@@ -435,9 +437,10 @@ def configPauseTime():
 def configPlayTime():
     main.setTimeStateToPlay()
 
-def handleEventPlayPauseButtonMouseLeftClick(buttonPlayPause):
+def handleEventPlayPauseButtonMouseLeftClick():
     global root
-    focusOnPlayPauseButton(buttonPlayPause) #Para retirar o foco do etrCurrentTime, caso o usuário tenha clicado nele
+    global btnPlayPause
+    focusOnPlayPauseButton(btnPlayPause) #Para retirar o foco do etrCurrentTime, caso o usuário tenha clicado nele
     if(not validateCurrentTime()):
         return #Valida o valor que está em etrCurrentTime, caso o usuário tenha alterado
     if(main.isTimeStatePlay()):
