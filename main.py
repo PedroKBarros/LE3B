@@ -8,6 +8,7 @@ import time
 filePath = ""
 file = None
 commentsQueue = deque()
+commentsQueueData = {"indexLastCommentRead": -1}
 timeData = {"initialTime": 0.0, "currentTime": 0.0, "totalTime": 0.0, "velocity": 1, "state": main_consts.STOP_TIME_STATE}
 
 def timeManagement():
@@ -66,6 +67,7 @@ def setTimeState():
 def countTime():
     global timeData
     while(timeData["state"] and not isEndTime()):
+        checkNextCommentToRead()
         time.sleep(1 / timeData["velocity"]) #espera 1 segundo
         timeData["currentTime"] += 1
         timeDiff = timeData["currentTime"] - timeData["initialTime"]
@@ -73,8 +75,24 @@ def countTime():
         updateCurrentTimeBar()
     
     if (isEndTime()):
+        checkNextCommentToRead() #Para colocar o último comentário no estado read, caso ele tenha o time igual ao totalTime
         ui.handleEventPlayPauseButtonMouseLeftClick()
         ui.updateUICurrentTimeBar(ui_consts.IMAGE_PATH_TIME_BAR_SIZE_MAX[0])
+
+def checkNextCommentToRead():
+    global commentsQueue
+    global commentsQueueData
+    global timeData
+    index = commentsQueueData["indexLastCommentRead"] + 1
+    if (index == len(commentsQueue)):
+        return
+    nextComment = commentsQueue[index]
+    timeNextComment = convertStrTimeToSeconds(nextComment["time"])
+    if (timeNextComment != timeData["currentTime"]):
+        return
+    ui.formatCommentForReading(index)
+    setCommentState(nextComment, 2)
+    commentsQueueData["indexLastCommentRead"] = index
 
 def setCurrentTime(newCurrentTime):
     global timeData
@@ -165,7 +183,7 @@ def loadComments():
     timeManagement()
 
 def setCommentState(comment, numState):
-    if (numState < 0 or numState > 3):
+    if (numState < 0 or numState > 2):
         return
     comment["state"] = main_consts.COMMENT_STATES[numState]
 

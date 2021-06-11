@@ -1,8 +1,7 @@
 CREATED_STATE = "created"
 LOADED_STATE = "loaded"
-READING_STATE = "reading"
-READED_STATE = "read"
-COMMENT_STATES = (CREATED_STATE, LOADED_STATE, READING_STATE, READED_STATE)
+READ_STATE = "read"
+COMMENT_STATES = (CREATED_STATE, LOADED_STATE, READ_STATE)
 EXCEPTION_MSG_TITLE = "Oops!"
 FILE_EXCEPTION_MSG_TEXT = "Sorry! We were embarrassed that an error occurred with the text file."
 STATUS_BAR_LOAD_COMMENTS_TEXT = "Carregando comentários..."

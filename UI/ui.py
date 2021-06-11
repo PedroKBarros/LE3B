@@ -416,6 +416,14 @@ def searchUICommentByAuthorName(authorName):
             return UIComment
     return None
 
+def formatCommentForReading(index):
+    global UICommentsQueue
+    UIComment = UICommentsQueue[index]
+    UIComment["wgAbbreviatedAuthorName"]["bg"] = UIComment["colorAbbreviated"]
+    UIComment["wgAuthorName"]["fg"] = ui_consts.THRID_FG_COLOR
+    UIComment["wgTime"]["fg"] = ui_consts.TIME_COMMENT_FG_COLOR_READ_STATE
+    UIComment["wgText"]["fg"] = ui_consts.THRID_FG_COLOR   
+
 def updateStatusBar(text, backGroundColor = ui_consts.CONTROLS_BG_COLOR, fontColor = ui_consts.SECOND_FG_COLOR):
     global lblStatusBar
     global root
