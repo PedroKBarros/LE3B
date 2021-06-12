@@ -19,6 +19,8 @@ lblCurrentTimeBar = None
 lastWidgetFocusIn = None
 btnPlayPause = None
 UICommentsQueue = deque()
+cnvComments = None
+scrbarCanvasComment = None
 
 def buildUI(root):
     root.geometry('338x500')
@@ -208,21 +210,23 @@ def buildUI(root):
     lblCurrentTimeBar["highlightthickness"] = 0
     lblCurrentTimeBar.place(x=10, y=145)
 
-    #UI responsável pela apresentação dos comentários:    
-    canvas1 = Canvas(root)
-    canvas1["width"] = 318
-    canvas1["height"] = 320
-    canvas1["highlightthickness"] = 0
-    canvas1["bg"] = ui_consts.DEFAULT_BG_COLOR
-    canvas1.place(x=2, y=163)
+    #UI responsável pela apresentação dos comentários: 
+    global cnvComments   
+    cnvComments = Canvas(root)
+    cnvComments["width"] = 318
+    cnvComments["height"] = 320
+    cnvComments["highlightthickness"] = 0
+    cnvComments["bg"] = ui_consts.DEFAULT_BG_COLOR
+    cnvComments.place(x=2, y=163)
 
     global commentsFrame
-    commentsFrame = Frame(canvas1, background = "#FFFFFF")
-    scrollbar1 = Scrollbar(root, orient = "vertical", command = canvas1.yview)
-    canvas1.configure(yscrollcommand = scrollbar1.set)
-    scrollbar1.pack(side="right", fill="y")
-    canvas1.create_window((4,4), window=commentsFrame, anchor="nw")
-    commentsFrame.bind("<Configure>", lambda event, canvas=canvas1: onFrameConfigure(canvas))
+    global scrbarCanvasComment
+    commentsFrame = Frame(cnvComments, background = "#FFFFFF")
+    scrbarCanvasComment = Scrollbar(root, orient = "vertical", command = cnvComments.yview)
+    cnvComments.configure(yscrollcommand = scrbarCanvasComment.set)
+    scrbarCanvasComment.pack(side="right", fill="y")
+    cnvComments.create_window((4,4), window=commentsFrame, anchor="nw")
+    commentsFrame.bind("<Configure>", lambda event, canvas=cnvComments: onFrameConfigure(canvas))
 
     global lblStatusBar
     lblStatusBar = Label(root)
@@ -569,8 +573,24 @@ def handleEtrCurrentTimeChange(var):
 
     if (len(content) == 2 or len(content) == 5):
         etrCurrentTime.insert(END, ":")
-        
 
+def getUIComment(index):
+    global UICommentsQueue
+    if (index < 0 or index >= len(UICommentsQueue)):
+        return None
+    
+    return UICommentsQueue[index]
+
+def positionsScrbarByUIComment(UIcommentIndex):
+    global scrbarCanvasComment
+    global cnvComments
+
+    UIComment = getUIComment(UIcommentIndex)
+    xWgAbbName = UIComment["wgAbbreviatedAuthorName"].winfo_x()
+    yWgAbbName = UIComment["wgAbbreviatedAuthorName"].winfo_y()
+    fraction = scrbarCanvasComment.fraction(xWgAbbName, yWgAbbName)
+    print("FRACTION = " + str(fraction))
+    cnvComments.yview_moveto(fraction)
 
 def isCharAsciiNumber(char):
     return ord(char) >= 48 and ord(char) <= 57

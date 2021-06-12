@@ -86,10 +86,12 @@ def checkCommentsToChangeStateByCurrentTimeUserInput():
     global commentsQueueData
 
     if (isTimeLastCommentReadMoreThanCurrentTime()):
+        print("READ TO LOADED")
         putCommentsReadToLoadedByCurrentTime()
         #Nesse caso, há pelo menos um comentário que deve ter seu estado alterado de read para loaded_state
     
     if (isTimeLastCommentReadLessThanCurrentTime()):
+        print("LOADED TO READ")
         putCommentsLoadedToReadByCurrentTime()
         #Nesse caso, há ou não pelo menos um comentário que deve ter seu estado alterado de loaded para read
 
@@ -108,6 +110,7 @@ def putCommentsReadToLoadedByCurrentTime():
             ui.formatCommentForLoaded(i)
             commentsQueueData["indexLastCommentRead"] = i - 1
         else:
+            ui.positionsScrbarByUIComment(i)
             break #Se não é maior, é pq nenhum outro comentário anterior será
 
 def putCommentsLoadedToReadByCurrentTime():
@@ -125,13 +128,18 @@ def putCommentsLoadedToReadByCurrentTime():
             ui.formatCommentForRead(i)
             commentsQueueData["indexLastCommentRead"] = i
         else:
+            ui.positionsScrbarByUIComment(i)
             break #Se não é menor ou igual, é pq nenhum outro comentário seguinte será       
 
 def isTimeLastCommentReadLessThanCurrentTime():
     global timeData
     global commentsQueue
     global commentsQueueData
-    lastCommentRead = commentsQueue[commentsQueueData["indexLastCommentRead"]]
+
+    indexLastCommentRead = commentsQueueData["indexLastCommentRead"]
+    if (indexLastCommentRead == -1):
+        return True
+    lastCommentRead = commentsQueue[indexLastCommentRead]
     lastTimeSecs = convertStrTimeToSeconds(lastCommentRead["time"])
     return lastTimeSecs < timeData["currentTime"]
 
@@ -139,7 +147,12 @@ def isTimeLastCommentReadMoreThanCurrentTime():
     global timeData
     global commentsQueue
     global commentsQueueData
-    lastCommentRead = commentsQueue[commentsQueueData["indexLastCommentRead"]]
+    
+    indexLastCommentRead = commentsQueueData["indexLastCommentRead"]
+    if (indexLastCommentRead == -1):
+        return False
+
+    lastCommentRead = commentsQueue[indexLastCommentRead]
     lastTimeSecs = convertStrTimeToSeconds(lastCommentRead["time"])
     return lastTimeSecs > timeData["currentTime"]
 
@@ -157,6 +170,8 @@ def checkNextCommentToRead():
     ui.formatCommentForRead(index)
     setCommentState(nextComment, 2)
     commentsQueueData["indexLastCommentRead"] = index
+    ui.positionsScrbarByUIComment(index)
+
 
 def setCurrentTime(newCurrentTime):
     global timeData
