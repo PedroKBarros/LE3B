@@ -11,6 +11,31 @@ commentsQueue = deque()
 commentsQueueData = {"indexLastCommentRead": -1}
 timeData = {"initialTime": 0.0, "currentTime": 0.0, "totalTime": 0.0, "velocity": 1, "state": main_consts.STOP_TIME_STATE}
 
+def resetVariables():
+    resetCommentsQueue()
+    resetCommentQueueData()
+    resetTimeData()
+
+def resetCommentsQueue():
+    global commentsQueue
+
+    commentsQueue.clear()
+
+def resetCommentQueueData():
+    global commentsQueueData
+
+    commentsQueueData["indexLastCommentRead"] = -1    
+
+def resetTimeData():
+    global timeData
+
+    timeData["initialTime"] = 0.0
+    timeData["currentTime"] = 0.0
+    timeData["totalTime"] = 0.0
+    timeData["velocity"] = 1
+    timeData["state"] = main_consts.STOP_TIME_STATE
+
+
 def timeManagement():
     global timeData
 
@@ -204,7 +229,8 @@ def loadCommentsManagement():
     print(filePath)
     try:
         file = open(filePath, "r", encoding="utf8")
-        ui.deleteAllComments()
+        resetVariables()
+        ui.resetVariables()
         loadComments()
         file.close()
     except(IOError, FileNotFoundError, FileExistsError):

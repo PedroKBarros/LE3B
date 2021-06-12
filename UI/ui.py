@@ -445,14 +445,42 @@ def updateStatusBar(text, backGroundColor = ui_consts.CONTROLS_BG_COLOR, fontCol
     lblStatusBar["text"] = text
     lblStatusBar["bg"] = backGroundColor
     lblStatusBar["fg"] = fontColor
-    root.update() #Para atualizar qualquer mudança visual na barra de status
-    
-def deleteAllComments():
+    root.update() #Para atualizar qualquer mudança visual na barra de status    
+
+def resetVariables():
+    resetPositionScrbarCommentCanvas() 
+    resetCommentsFrame()
+    resetCurrentCommentsUIRow() #Essa função tem que ser chamada apenas depois da resetCommentsFrame()
+    resetUICommentsQueue() #Essa função tem que ser chamada apenas depois da resetPositionScrbarCommentCanvas()
+    resetEtrCurrentTime()
+
+def resetCurrentCommentsUIRow():
+    global currentCommentsUIRow
+
+    currentCommentsUIRow = 0
+
+def resetUICommentsQueue():
+    global UICommentsQueue
+
+    UICommentsQueue.clear()
+
+def resetCommentsFrame():
+    #Deletando widgets dentro do frame:
     global currentCommentsUIRow
     global commentsFrame
     for widgets in commentsFrame.winfo_children():
         widgets.destroy()
     currentCommentsUIRow = 0
+
+def resetEtrCurrentTime():
+    global etrCurrentTime
+
+    printEntry(etrCurrentTime, "00:00:00")
+    etrCurrentTime.focus_set() #Para disparar o evento 
+
+def resetPositionScrbarCommentCanvas():
+    positionsScrbarByUIComment(0)
+
 
 def configPauseTime():
     main.setTimeStateToStop()
@@ -586,6 +614,8 @@ def positionsScrbarByUIComment(UIcommentIndex):
     global cnvComments
 
     UIComment = getUIComment(UIcommentIndex)
+    if (UIComment == None):
+        return
     xWgAbbName = UIComment["wgAbbreviatedAuthorName"].winfo_x()
     yWgAbbName = UIComment["wgAbbreviatedAuthorName"].winfo_y()
     fraction = scrbarCanvasComment.fraction(xWgAbbName, yWgAbbName)
