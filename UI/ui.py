@@ -340,25 +340,39 @@ def printEntry(wgEntry, string, aligment = "left"):
     wgEntry["justify"] = aligment
     wgEntry["state"] = originalState
 
-def showInfoMsgBox(title, message, callbackFunction=None, callbackCondition=None):
-    msgReturn = messagebox.showinfo(title=title, message=message)
-    runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+def showInfoMsgBox(title, message, showMsgFuncCondition = None, showMsgValueCondition = None, 
+callbackFunction=None, callbackCondition=None):
+    if (isRunMsgBox(showMsgFuncCondition, showMsgValueCondition)):
+        msgReturn = messagebox.showinfo(title=title, message=message)
+        runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
 
-def showWarningMsgBox(title, message, callbackFunction=None, callbackCondition=None):
-    msgReturn = messagebox.showwarning(title=title, message=message)
-    runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+def isRunMsgBox(showMsgFuncCondition = None, showMsgValueCondition = None):
+    return ((showMsgFuncCondition == None or showMsgValueCondition == None) or 
+    (showMsgFuncCondition() == showMsgValueCondition))
 
-def showErrorMsgBox(title, message, callbackFunction=None, callbackCondition=None):
-    msgReturn = messagebox.showerror(title=title, message=message)
-    runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+def showWarningMsgBox(title, message, showMsgFuncCondition = None, showMsgValueCondition = None, 
+callbackFunction=None, callbackCondition=None):
+    if (isRunMsgBox(showMsgFuncCondition, showMsgValueCondition)):
+        msgReturn = messagebox.showwarning(title=title, message=message)
+        runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
 
-def showAskOkCancelMsgBox(title, message, callbackFunction=None, callbackCondition=None):
-    msgReturn = messagebox.askokcancel(title=title, message=message)
-    runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+def showErrorMsgBox(title, message, showMsgFuncCondition = None, showMsgValueCondition = None, 
+callbackFunction=None, callbackCondition=None):
+    if (isRunMsgBox(showMsgFuncCondition, showMsgValueCondition)):
+        msgReturn = messagebox.showerror(title=title, message=message)
+        runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
 
-def showAskYesNoMsgBox(title, message, callbackFunction=None, callbackCondition=None):
-    msgReturn = messagebox.askyesno(title=title, message=message)
-    runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+def showAskOkCancelMsgBox(title, message, showMsgFuncCondition = None, showMsgValueCondition = None, 
+callbackFunction=None, callbackCondition=None):
+    if (isRunMsgBox(showMsgFuncCondition, showMsgValueCondition)):
+        msgReturn = messagebox.askokcancel(title=title, message=message)
+        runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
+
+def showAskYesNoMsgBox(title, message, showMsgFuncCondition = None, showMsgValueCondition = None, 
+callbackFunction=None, callbackCondition=None):
+    if (isRunMsgBox(showMsgFuncCondition, showMsgValueCondition)):
+        msgReturn = messagebox.askyesno(title=title, message=message)
+        runMsgBoxCallback(msgReturn, callbackFunction, callbackCondition)
     
 def runMsgBoxCallback(msgBoxReturn, callbackFunction, callbackCondition):
     if (callbackCondition == None or callbackFunction == None):
@@ -630,9 +644,24 @@ def isEtrCurrentTimeLastWidgetFocusIn():
     global lastWidgetFocusIn
     return lastWidgetFocusIn == "." + ui_consts.ETR_CURRENT_TIME_NAME
 
+def defineRootProtocols():
+    global root
+
+    root.wm_protocol("WM_DELETE_WINDOW", lambda title="Quit", 
+    message="Do you really want to quit?", showMsgFuncCondition=main.hasAliveThread, 
+    showMsgValueCondition=False, callbackFunction = handleEventcloseRoot, 
+    callbackCondition = True: showAskYesNoMsgBox(title, message, showMsgFuncCondition, 
+    showMsgValueCondition, callbackFunction, callbackCondition))
+
+def handleEventcloseRoot():
+    global root
+    root.destroy()
+
 def executaUI():
     global root
     root = Tk()
+    defineRootProtocols()
     buildUI(root)
     root.mainloop()
+
     

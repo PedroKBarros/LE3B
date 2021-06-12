@@ -10,6 +10,8 @@ file = None
 commentsQueue = deque()
 commentsQueueData = {"indexLastCommentRead": -1}
 timeData = {"initialTime": 0.0, "currentTime": 0.0, "totalTime": 0.0, "velocity": 1, "state": main_consts.STOP_TIME_STATE}
+load_thread = None
+time_thread = None
 
 def resetVariables():
     resetCommentsQueue()
@@ -38,10 +40,12 @@ def resetTimeData():
 
 def timeManagement():
     global timeData
+    global time_thread
 
     updateTotalTime()
     if (not isTimeStatePlay() or isEndTime()):
         return
+    
     time_thread = threading.Thread(target=countTime)
     time_thread.start()
 
@@ -220,6 +224,8 @@ def setFilePath(path):
     filePath = path
 
 def commentsManagement():
+    global load_thread
+
     load_thread = threading.Thread(target=loadCommentsManagement)
     load_thread.start()
 
@@ -301,6 +307,26 @@ def searchCommentByAuthorName(authorName):
         if (comment["authorName"] == authorName):
             return comment
     return None
+
+def hasAliveThread():
+    return isLoadThreadAlive() or isTimeThreadAlive()
+
+def isTimeThreadAlive():
+    global time_thread
+
+    if(time_thread == None):
+        return False
+
+    return time_thread.isAlive()
+
+def isLoadThreadAlive():
+    global load_thread
+
+    if(load_thread == None):
+        return False
+
+    return load_thread.isAlive()
+
 
 if __name__ == "__main__":
     ui.executaUI()
