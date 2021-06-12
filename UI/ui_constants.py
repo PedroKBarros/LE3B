@@ -1,5 +1,3 @@
-ROOT_TITLE = "LE3B"
-VERSION = "v1.0.0"
 FONT_NAME = "Verdana"
 FONT_SIZE1 = "10"
 FONT_SIZE2 = "11"

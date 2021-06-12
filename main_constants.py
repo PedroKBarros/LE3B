@@ -8,3 +8,5 @@ STATUS_BAR_LOAD_COMMENTS_TEXT = "Carregando comentários... "
 STATUS_BAR_LOADED_COMMENTS_TEXT = " comentários carregados!"
 PLAY_TIME_STATE = True
 STOP_TIME_STATE = False
+VERSION = "0.1.0"
+SOFTWARE_NAME = "LE3B"

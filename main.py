@@ -327,6 +327,12 @@ def isLoadThreadAlive():
 
     return load_thread.isAlive()
 
+def getSoftwareVersion():
+    return main_consts.VERSION
+
+def getSoftwareName():
+    return main_consts.SOFTWARE_NAME
+
 
 if __name__ == "__main__":
     ui.executaUI()

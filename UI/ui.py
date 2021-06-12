@@ -23,9 +23,14 @@ cnvComments = None
 scrbarCanvasComment = None
 
 def buildUI(root):
+    load_image = Image.open("UI/icon.png")
+    #load_image = load_image.resize((90, 90), Image.ANTIALIAS)
+    render_image = ImageTk.PhotoImage(load_image)
+    root.iconphoto(True, render_image)
+
     root.geometry('338x500')
     root.resizable(False, False)
-    root.title(ui_consts.ROOT_TITLE + " " + ui_consts.VERSION)
+    root.title(main.getSoftwareName() + " " + main.getSoftwareVersion())
     root["bg"] = ui_consts.DEFAULT_BG_COLOR
 
     labelFont = (ui_consts.FONT_NAME, ui_consts.FONT_SIZE2)
@@ -659,6 +664,7 @@ def handleEventcloseRoot():
 
 def executaUI():
     global root
+
     root = Tk()
     defineRootProtocols()
     buildUI(root)
