@@ -12,6 +12,7 @@ commentsQueueData = {"indexLastCommentRead": -1}
 timeData = {"initialTime": 0.0, "currentTime": 0.0, "totalTime": 0.0, "velocity": 1, "state": main_consts.STOP_TIME_STATE}
 load_thread = None
 time_thread = None
+isCloseProgram = False
 
 def resetVariables():
     resetCommentsQueue()
@@ -43,7 +44,7 @@ def timeManagement():
     global time_thread
 
     updateTotalTime()
-    if (not isTimeStatePlay() or isEndTime()):
+    if (not isTimeStatePlay() or isEndTime() or isCloseProgram):
         return
     
     time_thread = threading.Thread(target=countTime)
@@ -91,11 +92,12 @@ def setTimeStateToStop():
 
 def setTimeState():
     global timeData
+    global isCloseProgram
     timeData["state"] = not timeData["state"]
 
 def countTime():
     global timeData
-    while(timeData["state"] and not isEndTime()):
+    while(timeData["state"] and not isEndTime() and not isCloseProgram):
         checkNextCommentToRead()
         time.sleep(1 / timeData["velocity"]) #espera 1 segundo
         timeData["currentTime"] += 1
@@ -225,15 +227,21 @@ def setFilePath(path):
 
 def commentsManagement():
     global load_thread
+    global isCloseProgram
 
+    if (isCloseProgram):
+        return
     load_thread = threading.Thread(target=loadCommentsManagement)
     load_thread.start()
 
 def loadCommentsManagement():
     global filePath
     global file
+    global isCloseProgram
     print(filePath)
     try:
+        if (isCloseProgram):
+            return
         file = open(filePath, "r", encoding="utf8")
         resetVariables()
         ui.resetVariables()
@@ -244,6 +252,7 @@ def loadCommentsManagement():
 
 def loadComments():
     global commentsQueue
+    global isCloseProgram
     #Atenção: essa função considera que só é possível quebrar 
     # linha em uma mensagem no chat do BigBlueButton, mas não 
     # nos demais atributos do comentário
@@ -252,7 +261,8 @@ def loadComments():
     currentNumChars = 0
     file.seek(0) #Colocando o stram position do inicio do arquivo novamente
     line = file.readline()
-    while line:
+    while line and not isCloseProgram:
+        print("WHILE 1")
         if (lineNum == 0):
             abbreviatedAuthorName = line
             currentNumChars += len(abbreviatedAuthorName)
@@ -269,6 +279,7 @@ def loadComments():
             text = line
             line2 = file.readline()
             while line2 and not isAbbreviatedAuthorNameLine(line2):
+                print("WHILE 2")
                 text += line2
                 line2 = file.readline()
             
@@ -292,6 +303,7 @@ def loadComments():
     
     ui.updateStatusBar(str(len(commentsQueue)) + main_consts.STATUS_BAR_LOADED_COMMENTS_TEXT)
     timeManagement()
+    print("PARAOU DE CARREGAR COMENTÁRIOS")
 
 def setCommentState(comment, numState):
     if (numState < 0 or numState > 2):
@@ -309,6 +321,8 @@ def searchCommentByAuthorName(authorName):
     return None
 
 def hasAliveThread():
+    print("LOAD THREAD RUN = " + str(isLoadThreadAlive()))
+    print("TIME THREAD RUN = " + str(isTimeThreadAlive()))
     return isLoadThreadAlive() or isTimeThreadAlive()
 
 def isTimeThreadAlive():
@@ -317,7 +331,7 @@ def isTimeThreadAlive():
     if(time_thread == None):
         return False
 
-    return time_thread.isAlive()
+    return time_thread.is_alive()
 
 def isLoadThreadAlive():
     global load_thread
@@ -325,7 +339,7 @@ def isLoadThreadAlive():
     if(load_thread == None):
         return False
 
-    return load_thread.isAlive()
+    return load_thread.is_alive()
 
 def getSoftwareVersion():
     return main_consts.VERSION

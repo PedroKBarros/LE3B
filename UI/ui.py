@@ -653,14 +653,20 @@ def defineRootProtocols():
     global root
 
     root.wm_protocol("WM_DELETE_WINDOW", lambda title="Quit", 
-    message="Do you really want to quit?", showMsgFuncCondition=main.hasAliveThread, 
-    showMsgValueCondition=False, callbackFunction = handleEventcloseRoot, 
+    message="Do you really want to quit?", showMsgFuncCondition=None, 
+    showMsgValueCondition=None, callbackFunction = handleEventcloseRoot, 
     callbackCondition = True: showAskYesNoMsgBox(title, message, showMsgFuncCondition, 
     showMsgValueCondition, callbackFunction, callbackCondition))
 
 def handleEventcloseRoot():
     global root
-    root.destroy()
+
+    updateStatusBar("Saindo...")
+    if (main.hasAliveThread()):    
+        main.isCloseProgram = True
+        root.after(1000, root.destroy) #1000ms é o tempo máximo que a thread que conta segundo ficará sem conferir a condição de seu loop
+    else:
+        root.destroy()
 
 def executaUI():
     global root
