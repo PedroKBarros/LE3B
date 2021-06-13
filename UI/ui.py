@@ -21,6 +21,7 @@ btnPlayPause = None
 UICommentsQueue = deque()
 cnvComments = None
 scrbarCanvasComment = None
+CkbScrollbarAutoMoveVar = None
 
 def buildUI(root):
     load_image = Image.open("UI/icon.png")
@@ -28,7 +29,7 @@ def buildUI(root):
     render_image = ImageTk.PhotoImage(load_image)
     root.iconphoto(True, render_image)
 
-    root.geometry('338x500')
+    root.geometry('338x531')
     root.resizable(False, False)
     root.title(main.getSoftwareName() + " " + main.getSoftwareVersion())
     root["bg"] = ui_consts.DEFAULT_BG_COLOR
@@ -233,13 +234,21 @@ def buildUI(root):
     cnvComments.create_window((4,4), window=commentsFrame, anchor="nw")
     commentsFrame.bind("<Configure>", lambda event, canvas=cnvComments: onFrameConfigure(canvas))
 
+    global CkbScrollbarAutoMoveVar
+    CkbScrollbarAutoMoveVar = IntVar()
+    CkbScrollbarAutoMove = Checkbutton(root, variable=CkbScrollbarAutoMoveVar, command=handleCkbScrollbarAutoMove)
+    CkbScrollbarAutoMove["text"] = "Mover automaticamente para Comentário"
+    CkbScrollbarAutoMove["font"] = entryFont
+    CkbScrollbarAutoMove["bg"] = ui_consts.DEFAULT_BG_COLOR
+    CkbScrollbarAutoMove.place(x=0, y=480)
+
     global lblStatusBar
     lblStatusBar = Label(root)
     lblStatusBar["bg"] = ui_consts.CONTROLS_BG_COLOR
     lblStatusBar["width"] = 45
     lblStatusBar["fg"] = ui_consts.SECOND_FG_COLOR
     lblStatusBar["anchor"] = W
-    lblStatusBar.place(x=0, y=480)
+    lblStatusBar.place(x=0, y=510)
     
 def onFrameConfigure(canvas):
     '''Reset the scroll region to encompass the inner frame'''
@@ -632,6 +641,9 @@ def positionsScrbarByUIComment(UIcommentIndex):
     global scrbarCanvasComment
     global cnvComments
 
+    if (not main.isScrollBarAutoMoveEnabled()):
+        return
+
     UIComment = getUIComment(UIcommentIndex)
     if (UIComment == None):
         return
@@ -644,10 +656,14 @@ def positionsScrbarByUIComment(UIcommentIndex):
 def isCharAsciiNumber(char):
     return ord(char) >= 48 and ord(char) <= 57
     
-    
 def isEtrCurrentTimeLastWidgetFocusIn():
     global lastWidgetFocusIn
     return lastWidgetFocusIn == "." + ui_consts.ETR_CURRENT_TIME_NAME
+
+def handleCkbScrollbarAutoMove():
+    global CkbScrollbarAutoMoveVar
+    print(CkbScrollbarAutoMoveVar.get())
+    main.updateConfigScrollBarAutoMove(CkbScrollbarAutoMoveVar.get())
 
 def defineRootProtocols():
     global root

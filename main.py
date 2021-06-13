@@ -13,6 +13,7 @@ timeData = {"initialTime": 0.0, "currentTime": 0.0, "totalTime": 0.0, "velocity"
 load_thread = None
 time_thread = None
 isCloseProgram = False
+softwareConfigs = {"scrollBarAutoMove": False}
 
 def resetVariables():
     resetCommentsQueue()
@@ -77,6 +78,14 @@ def convertStrTimeToSeconds(strTime):
 def updateTimeVelocityByUI(newVelocity):
     global timeData
     timeData["velocity"] = newVelocity
+
+def updateConfigScrollBarAutoMove(newValue):
+    global softwareConfigs
+    softwareConfigs["scrollBarAutoMove"] = bool(newValue)
+
+def isScrollBarAutoMoveEnabled():
+    global softwareConfigs
+    return softwareConfigs["scrollBarAutoMove"]
 
 def isTimeStatePlay():
     global timeData
